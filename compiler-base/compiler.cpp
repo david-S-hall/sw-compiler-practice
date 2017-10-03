@@ -258,7 +258,9 @@ void block(int lev, int tx, bool* fsys)
     table[tx].adr = cx;
     //gen(jmp, 0, 0);     /* generate jmp code */
 
+    /* declaration list parsing */
     do {
+        /* variable declaration parsing */
         while (sym == varsym)
         {
             getsym();
@@ -269,7 +271,7 @@ void block(int lev, int tx, bool* fsys)
             else error(5);
         }
 
-        if (lev == 1) continue;	// no function declaration nesting
+        /* function declaration parsing */
         while (sym == funcsym)
         {
             getsym();
@@ -282,24 +284,54 @@ void block(int lev, int tx, bool* fsys)
             if (sym == lbrace) getsym();	// processing {
             else error(35);
 
+            /* function declaration nesting is not allowed */
             if(lev == 0){
 	            memcpy(nxtlev, fsys, sizeof nxtlev);
     	        nxtlev[semicolon] = true;
     	        block(1, tx, nxtlev);
 			}
 
-			if (sym == rbrace)
+			if (sym == rbrace)   // processing }
 			{
 				getsym();
 				memcpy(nxtlev, statbegsys, sizeof nxtlev);
 				nxtlev[funcsym] = true;
-				test(nxtlev, fsys, 6);
+				test(nxtlev, fsys, 6);  // after a function should be a statement or another function
 			}
-			else error(36);	// processing }
+			else error(36);
         }
-        memcpy (nxtlev, statbegsys, sizeof nxtlev);
+
+        memcpy(nxtlev, statbegsys, sizeof nxtlev);
         test(nxtlev, declbegsys, 7);
-    } while (inset(sym, declbegsys));
+    } while (inset(sym, declbegsys));   // processing until no declaration symbols
+
+    /* update symbol table & fct codes */
+    code[table[tx0].adr].a = cx;
+    table[tx0].adr = cx;
+    table[tx0].size = dx;
+    cx0 = cx;
+    gen(ini, 0, dx);
+
+    if (tableswitch)
+    {
+        for(int i = 1; i <= tx; ++i)
+        {
+            switch (table[i].kind)
+            {
+                case variable:
+                    fprintf(ftable, "    %d var   %s ", i, table[i].name);
+                    fprintf(ftable, "lev=%d addr=%d\n", table[i].level, table[i].adr);
+                    break;
+                case function:
+                    fprintf(ftable,"    %d func  %s ", i, table[i].name);
+                    fprintf(ftable,"lev=%d addr=%d size=%d\n", table[i].level, table[i].adr, table[i].size);
+                    break;
+            }
+        }
+        fprintf(ftable, "\n");
+    }
+
+
 }
 
 /*

@@ -19,13 +19,9 @@ struct Instruction
 	enum FCT f;	// code type
 	int l;		// level distance
 	int a;		// operation number for different code
-};
+}code[MAX_CX];
 
-FILE* fin;
-FILE* ftable;
-FILE* fcode;
-FILE* ferr;
-FILE* fresult;
+/* global variables for compiler */
 
 char ch;				// store loaded character for getch
 enum SYMBOL sym;		// current symbol
@@ -37,6 +33,19 @@ char line[LEN_L+1]; 	// line buffer
 char a[LEN_ID+1];		// symbol buffer
 int line_num;           // counter for read line
 int err_num;			// counter for known errors
+
+/* output tools */
+
+bool listswitch;		// 1 then shows fct
+bool tableswitch;		// 1 then shows symbol table
+
+FILE* fin;
+FILE* ftable;
+FILE* fcode;
+FILE* ferr;
+FILE* fresult;
+
+/* function declarations */
 
 void init();
 void error(int n);
