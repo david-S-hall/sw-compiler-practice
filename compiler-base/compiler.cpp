@@ -299,11 +299,11 @@ void block(int lev, int tx, bool* fsys)
             declaration(function, &tx, lev, &dx);
 
             if (sym == lparen) getsym();	// processing ()
-            else error(34);
+            else error(36);
             if (sym == rparen) getsym();
-            else error(34);
+            else error(36);
             if (sym == lbrace) getsym();	// processing {
-            else error(35);
+            else error(37);
 
             /* function declaration nesting is not allowed */
             if(lev == 0){
@@ -319,7 +319,7 @@ void block(int lev, int tx, bool* fsys)
 				nxtlev[funcsym] = true;
 				test(nxtlev, fsys, 6);  // after a function should be a statement or another function
 			}
-			else error(36);
+			else error(37);
         }
 
         test(statbegsys, declbegsys, 7);    // test if there is a correct statement start
@@ -444,7 +444,7 @@ void statement(bool* fsys, int* ptx, int lev)
                 getsym();
                 if(sym == becomes)
                     getsym();
-                else error(13);
+                else error(13); // no becomes symbol
                 /* expression parsing */
                 memcpy(nxtlev, fsys, sizeof nxtlev);
                 expression(nxtlev, ptx, lev);
@@ -452,6 +452,64 @@ void statement(bool* fsys, int* ptx, int lev)
                     gen(sto, lev-table[i].level, table[i].adr);
             }
         }
+    }
+    /* read statement parsing */
+    else if (sym == readsym)
+    {
+        getsym();
+        if(sym != lparen)   // lack of '('
+            error(34);
+        else
+        {
+            getsym();
+            if (sym == ident)
+                i = position(id, *ptx);
+            else i = 0;
+
+            if (i == 0) error(35);  // identity in read() still not declared
+            else
+            {
+                gen(opr, 0, 16);    // generate input instruction
+                gen(sto, lev-table[i].level, table[i].adr); // send stack top into variable
+            }
+            getsym();
+        }
+        if (sym != rparen)
+        {
+            error(33);  // lacking token ')'
+            while (!inset(sym, fsys))   // recover with last level follow set
+                getsym();
+        }
+        else getsym();
+    }
+    /* write statement parsing */
+    else if (sym == printsym)
+    {
+        getsym();
+        if(sym != lparen)   // lack of '('
+            error(34);
+        else
+        {
+            getsym();
+            if (sym == ident)
+                i = position(id, *ptx);
+            else i = 0;
+
+            if (i == 0) error(35);  // identity in print() still not declared
+            else
+            {
+                gen(opr, 0, 14);    // generate output instruction
+                gen(opr, 0, 15);    // generate line instruction
+            }
+            getsym();
+        }
+        if (sym != rparen)
+        {
+            error(33);  // lacking token ')'
+            while (!inset(sym, fsys))   // recover with last level follow set
+                getsym();
+        }
+        else getsym();
     }
 }
 
