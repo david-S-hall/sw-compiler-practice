@@ -51,13 +51,19 @@ void init();
 void error(int n);
 void getsym();
 void getch();
+void gen(enum FCT x, int y, int z);
+void test(bool* s1, bool* s2, int n);
 int inset(int e, bool* s);
 int addset(bool* sr, bool* s1, bool* s2, int n);
 int subset(bool* sr, bool* s1, bool* s2, int n);
 int mulset(bool* sr, bool* s1, bool* s2, int n);
-void test(bool* s1, bool* s2, int n);
+void listcode(int cx0);
 void block(int lev, int tx, bool* fsys);
 void declaration(enum OBJECT tp, int* ptx, int lev, int* pdx);
+void statement(bool* fsys, int* ptx, int lev);
+void enter(enum OBJECT k, int* ptx, int lev, int* pdx);
+int position(char* idt, int tx);
+int base(int l, int* s, int b);
 
 void init_proc()
 {

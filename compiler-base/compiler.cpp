@@ -219,6 +219,30 @@ void getsym()
         }
 	}
 }
+
+/*
+ * generate fct codes
+ *
+ * x: Instruction.f
+ * y: Instruction.l
+ * z: Instruction.a
+ */
+void gen(enum FCT x, int y, int z)
+{
+    if (cx >= MAX_CX)
+    {
+        error(60);
+    }
+    if (z >= BOUND_ADR)
+    {
+        error(61);
+    }
+    code[cx].f = x;
+    code[cx].l = y;
+    code[cx].a = z;
+    cx++;
+}
+
 /*
  * test current symbol's legality
  *
@@ -227,7 +251,7 @@ void getsym()
  * n:		error type
  */
  void test(bool* s1, bool* s2, int n)
- {
+{
  	if (!inset(sym, s1))
  	{
  		error(n);
@@ -240,7 +264,7 @@ void getsym()
  }
 
 /*
- * Main body for compiler
+ * Main body for compiler and block processing
  *
  * lev:		0 means main block, 1 means function body
  * tx:      tail pointer for symbol list
@@ -256,7 +280,7 @@ void block(int lev, int tx, bool* fsys)
     dx = 3;
     tx0 = tx;
     table[tx].adr = cx;
-    //gen(jmp, 0, 0);     /* generate jmp code */
+    gen(jmp, 0, 0);     /* generate jmp code */
 
     /* declaration list parsing */
     do {
@@ -301,8 +325,7 @@ void block(int lev, int tx, bool* fsys)
 			else error(36);
         }
 
-        memcpy(nxtlev, statbegsys, sizeof nxtlev);
-        test(nxtlev, declbegsys, 7);
+        test(statbegsys, declbegsys, 7);    // test if there is a correct statement start
     } while (inset(sym, declbegsys));   // processing until no declaration symbols
 
     /* update symbol table & fct codes */
@@ -331,10 +354,17 @@ void block(int lev, int tx, bool* fsys)
         fprintf(ftable, "\n");
     }
 
-
+    /* statement list parsing */
+    memcpy(nxtlev, fsys, sizeof nxtlev);
+    nxtlev[semicolon] = true;
+    statement(nxtlev, &tx, lev);
+    gen(opr, 0, 0);
+    memset(nxtlev, 0, sizeof nxtlev);
+    test(fsys, nxtlev, 8);
+    listcode(cx0);
 }
 
-/*
+/* 
  * add new to symbol table
  *
  * k:		type of symbol
@@ -361,22 +391,25 @@ void enter(enum OBJECT k, int* ptx, int lev, int* pdx)
 }
 
 /*
- * variable declaration processing
+ * searching for the identity's position in symbol table
+ * 0 represents not exists
+ *
+ * id:      name of identity
+ * tx:      current tail pointer of symbol table
  */
-void vardeclaration(int *ptx, int lev, int* pdx)
+int position(char* id, int tx)
 {
-	if (sym == ident)
-	{
-		enter(variable, ptx, lev, pdx);
-		getsym();
-	}
-	else
-		error(4);
+    int i = tx;
+    strcpy(table[0].name, id);
+    while (strcmp(table[i].name, id) != 0)
+        --i;
+    return i;
 }
 
 /*
  * declaration processing
  *
+ * tp:      type of declaration processing
  * ptx:		tail pointer of symbol table
  * lev:		symbol is in main block or function body
  * pdx:		relative address for current variable
@@ -390,4 +423,56 @@ void declaration(enum OBJECT tp, int *ptx, int lev, int* pdx)
 	}
 	else
 		error(4);
+}
+
+/*
+ * statement processing
+ */
+void statement(bool* fsys, int* ptx, int lev)
+{
+    int p, cx1, cx2;
+    bool nxtlev[N_SYM];
+
+    if (sym == ident)
+    {
+        p = position(id, *ptx);
+        if (p == 0) error(11);
+        else
+        {
+            if (table[p].kind != variable)
+            {
+                
+            }
+        }
+    }
+}
+
+/*
+ * output code list
+ */
+void listcode(int cx0)
+{
+    if(listswitch)
+    {
+        puts("");
+        for(int i = cx0; i < cx; ++i)
+        {
+            printf("%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
+        }
+    }
+}
+
+/*
+ * output all codes
+ */
+void listall()
+{
+    if(listswitch)
+    {
+        for (int i = 0; i < cx; ++i)
+        {
+            printf("%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
+            fprintf(fcode,"%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
+        }
+    }
 }

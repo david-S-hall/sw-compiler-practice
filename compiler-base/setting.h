@@ -40,6 +40,7 @@ enum FCT {
 };
 
 char word[N_RW][LEN_ID];		/* reversed words' dict */
+char mnemonic[N_FCT][5];		/* fct code dict */
 enum SYMBOL ssym[256];			/* value of single-letter-type symbol */
 enum SYMBOL wsym[N_RW];			/* value of reversed word symbol */
 bool declbegsys[N_SYM];			/* start symbol set of declaration */
@@ -75,16 +76,26 @@ void init_setting()
     wsym[9] = callsym;
 
 	/* reversed words dict */
-	strcpy(&(word[0][0]), "var");
-	strcpy(&(word[1][0]), "func");
-	strcpy(&(word[2][0]), "if");
-	strcpy(&(word[3][0]), "else");
-	strcpy(&(word[4][0]), "while");
-	strcpy(&(word[5][0]), "for");
-	strcpy(&(word[6][0]), "in");
-	strcpy(&(word[7][0]), "read");
-	strcpy(&(word[8][0]), "print");
-	strcpy(&(word[9][0]), "call");
+	strcpy(word[0], "var");
+	strcpy(word[1], "func");
+	strcpy(word[2], "if");
+	strcpy(word[3], "else");
+	strcpy(word[4], "while");
+	strcpy(word[5], "for");
+	strcpy(word[6], "in");
+	strcpy(word[7], "read");
+	strcpy(word[8], "print");
+	strcpy(word[9], "call");
+
+	/* fct code dict */
+	strcpy(mnemonic[lit], "lit");
+	strcpy(mnemonic[opr], "opr");
+	strcpy(mnemonic[lod], "lod");
+	strcpy(mnemonic[sto], "sto");
+	strcpy(mnemonic[cal], "cal");
+	strcpy(mnemonic[ini], "int");
+	strcpy(mnemonic[jmp], "jmp");
+	strcpy(mnemonic[jpc], "jpc");
 
 	/* start sets setting */
 	declbegsys[varsym] = true;
