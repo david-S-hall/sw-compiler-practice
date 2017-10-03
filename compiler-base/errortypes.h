@@ -3,8 +3,6 @@
 
 #include <cstring>
 
-using namespace std;
-
 char ERR_TP[100][100];
 
 void init_errors()
@@ -16,6 +14,9 @@ void init_errors()
     strcmp(ERR_TP[8], "a wrong follow token after statement");
     strcmp(ERR_TP[11], "a no-declaration identity");
     strcmp(ERR_TP[12], "a variable type need for lhs");
+    strcmp(ERR_TP[13], "lack of become token for assignment statement");
+    strcmp(ERR_TP[21], "invalid conversation for function identity in expression");
+    strcmp(ERR_TP[24], "a wrong start token for factor");
     strcmp(ERR_TP[30], "too long for a number");
     strcmp(ERR_TP[34], "function declaration needs '()' token");
     strcmp(ERR_TP[35], "block needs start after '{' token");

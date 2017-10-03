@@ -4,9 +4,6 @@
 #include <cctype>
 #include "compiler.h"
 
-using namespace std;
-
-
 int main()
 {
     init();
@@ -364,7 +361,7 @@ void block(int lev, int tx, bool* fsys)
     listcode(cx0);
 }
 
-/* 
+/*
  * add new to symbol table
  *
  * k:		type of symbol
@@ -430,18 +427,123 @@ void declaration(enum OBJECT tp, int *ptx, int lev, int* pdx)
  */
 void statement(bool* fsys, int* ptx, int lev)
 {
-    int p, cx1, cx2;
+    int i, cx1, cx2;
     bool nxtlev[N_SYM];
 
+    /* assignment statement parsing */
     if (sym == ident)
     {
-        p = position(id, *ptx);
-        if (p == 0) error(11);
+        i = position(id, *ptx);
+        if (i == 0) error(11);
         else
         {
-            if (table[p].kind != variable)
+            if (table[i].kind != variable)
+                error(12);
+            else
             {
-                
+                getsym();
+                if(sym == becomes)
+                    getsym();
+                else error(13);
+                /* expression parsing */
+                memcpy(nxtlev, fsys, sizeof nxtlev);
+                expression(nxtlev, ptx, lev);
+                if (i != 0)
+                    gen(sto, lev-table[i].level, table[i].adr);
+            }
+        }
+    }
+}
+
+/*
+ * expression processing
+ */
+void expression(bool* fsys, int* ptx, int lev)
+{
+    enum SYMBOL addop = nul;
+    bool nxtlev[N_SYM];
+
+    if (sym == plus || sym == minus) // expression start with '+'|'-'
+    {
+        addop = sym;
+        getsym();
+    }
+
+    /* term parsing */
+    memcpy(nxtlev, fsys, sizeof nxtlev);
+    nxtlev[plus] = true;
+    nxtlev[minus] = true;
+    term(nxtlev, ptx, lev);
+
+    if (addop == minus)  // generate negative command if expr start with '-'
+        gen(opr, 0, 1);
+
+    while (sym == plus || sym == minus)
+    {
+        addop = sym;
+        getsym();
+        /* term parsing */
+        term(nxtlev, ptx, lev);
+
+        if (addop == plus)      // generate add instruction
+            gen(opr, 0, 2);
+        else gen(opr, 0, 3);    // generate minus instruction
+    }
+}
+
+/*
+ * term processing
+ */
+void term(bool* fsys, int* ptx, int lev)
+{
+    enum SYMBOL mulop;
+    bool nxtlev[N_SYM];
+
+    /* term parsing */
+    memcpy(nxtlev, fsys, sizeof nxtlev);
+    nxtlev[times] = true;
+    nxtlev[slash] = true;
+    factor(nxtlev, ptx, lev);
+
+    while (sym == times || sym == slash)
+    {
+        mulop = sym;
+        getsym();
+        /* factor parsing */
+        factor(nxtlev, ptx, lev);
+
+        if(mulop == times)      // generate times instruction
+            gen(opr, 0, 4);
+        else gen(opr, 0, 5);    // generate slash instruction
+    }
+}
+
+/*
+ * factor processing
+ */
+void factor(bool* fsys, int* ptx, int lev)
+{
+    int i;
+    bool nxtlev[N_SYM];
+
+    test(facbegsys, fsys, 24);
+    while (inset(sym, facbegsys))
+    {
+        if (sym == ident)
+        {
+            i = position(id, *ptx);
+            if (i == 0) error(11);  // a no-declaration identity
+            else
+            {
+                switch (table[i].kind)
+                {
+                    case variable:
+                        gen(lod, lev-table[i].level, table[i].adr);
+                        break;
+                    case function:
+                        error(21);  // cannot be a function
+                        break;
+                }
             }
         }
     }

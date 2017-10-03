@@ -64,28 +64,28 @@ void init_setting()
 	ssym[';'] = semicolon;
 
 	/* reversed word symbol */
-	wsym[0] = varsym;
-	wsym[1] = funcsym;
-	wsym[2] = ifsym;
-	wsym[3] = elsesym;
-    wsym[4] = whilesym;
-	wsym[5] = forsym;
-	wsym[6] = insym;
+	wsym[0] = callsym;
+	wsym[1] = elsesym;
+	wsym[2] = forsym;
+	wsym[3] = funcsym;
+    wsym[4] = ifsym;
+	wsym[5] = insym;
+	wsym[6] = printsym;
 	wsym[7] = readsym;
-	wsym[8] = printsym;
-    wsym[9] = callsym;
+	wsym[8] = varsym;
+    wsym[9] = whilesym;
 
 	/* reversed words dict */
-	strcpy(word[0], "var");
-	strcpy(word[1], "func");
-	strcpy(word[2], "if");
-	strcpy(word[3], "else");
-	strcpy(word[4], "while");
-	strcpy(word[5], "for");
-	strcpy(word[6], "in");
+	strcpy(word[0], "call");
+	strcpy(word[1], "else");
+	strcpy(word[2], "for");
+	strcpy(word[3], "func");
+	strcpy(word[4], "if");
+	strcpy(word[5], "in");
+	strcpy(word[6], "print");
 	strcpy(word[7], "read");
-	strcpy(word[8], "print");
-	strcpy(word[9], "call");
+	strcpy(word[8], "var");
+	strcpy(word[9], "while");
 
 	/* fct code dict */
 	strcpy(mnemonic[lit], "lit");
