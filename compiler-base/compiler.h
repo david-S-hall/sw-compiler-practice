@@ -48,8 +48,7 @@ int subset(bool* sr, bool* s1, bool* s2, int n);
 int mulset(bool* sr, bool* s1, bool* s2, int n);
 void test(bool* s1, bool* s2, int n);
 void block(int lev, int tx, bool* fsys);
-void vardeclaration(int* ptx, int* pdx);
-void funcdeclaration(int* ptx, int* pdx);
+void declaration(enum OBJECT tp, int* ptx, int lev, int* pdx);
 
 void init_proc()
 {

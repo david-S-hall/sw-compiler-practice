@@ -349,11 +349,11 @@ void vardeclaration(int *ptx, int lev, int* pdx)
  * lev:		symbol is in main block or function body
  * pdx:		relative address for current variable
  */
-void declaration(enum OBJECT tp,int *ptx, int* pdx)
+void declaration(enum OBJECT tp, int *ptx, int lev, int* pdx)
 {
 	if (sym == ident)
 	{
-		enter(tp, ptx, pdx);
+		enter(tp, ptx, lev, pdx);
 		getsym();
 	}
 	else
