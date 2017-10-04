@@ -58,7 +58,7 @@ int addset(bool* sr, bool* s1, bool* s2, int n);
 int subset(bool* sr, bool* s1, bool* s2, int n);
 int mulset(bool* sr, bool* s1, bool* s2, int n);
 void listcode(int cx0);
-void block(int lev, int tx, bool* fsys);
+void problem(int lev, int tx, bool* fsys);
 void declaration(enum OBJECT tp, int* ptx, int lev, int* pdx);
 void statement(bool* fsys, int* ptx, int lev);
 void condition(bool* fsys, int* ptx, int lev);

@@ -122,7 +122,7 @@ void getsym()
                 j = k - 1;
 
             if (strcmp(id, word[k]) >= 0)
-                i = k+1;
+                i = k + 1;
 
 		} while (i <= j);
 		if (i-1 > j)    // current symbol is reversed word
@@ -267,7 +267,7 @@ void gen(enum FCT x, int y, int z)
  * tx:      tail pointer for symbol list
  * fsys:    follow set of current block
  */
-void block(int lev, int tx, bool* fsys)
+void problem(int lev, int tx, bool* fsys)
 {
     int dx;             /* record of relative address of data */
     int tx0;            /* record of original tx */
@@ -309,7 +309,7 @@ void block(int lev, int tx, bool* fsys)
             if(lev == 0){
 	            memcpy(nxtlev, fsys, sizeof nxtlev);
     	        nxtlev[semicolon] = true;
-    	        block(1, tx, nxtlev);
+    	        problem(1, tx, nxtlev);
 			}
 
 			if (sym == rbrace)   // processing }
@@ -511,6 +511,39 @@ void statement(bool* fsys, int* ptx, int lev)
         }
         else getsym();
     }
+    /* call statement parsing */
+    else if (sym == callsym)
+    {
+        getsym();
+        if (sym != ident)
+            error(14);  // lacks call identity
+        else
+        {
+            i = position(id, *ptx);
+            if (i == 0)
+                error(11);  // function identity without declaration
+            else
+            {
+                if (table[i].kind == function)
+                    gen(cal, lev-table[i].level, table[i].adr);
+                else error(15); // identity isn't a function
+            }
+            getsym();
+
+            // processing '()'
+            if (sym == lparen) getsym();
+            else error(36);
+            if (sym == rparen) getsym();
+            else error(36);
+        }
+    }
+    /* if statement parsing */
+    else if (sym == ifsym)
+    {
+        getsym();
+        memcpy(nxtlev, fsys, sizeof nxtlev);
+        nxtlev[lparen]
+    }
 }
 
 /*
@@ -587,6 +620,7 @@ void factor(bool* fsys, int* ptx, int lev)
     test(facbegsys, fsys, 24);
     while (inset(sym, facbegsys))
     {
+        /* the factor is a identity */
         if (sym == ident)
         {
             i = position(id, *ptx);
@@ -603,7 +637,33 @@ void factor(bool* fsys, int* ptx, int lev)
                         break;
                 }
             }
+            getsym();
         }
+        /* the factor is a number */
+        else if (sym == number)
+        {
+            if (num > BOUND_ADR)
+            {
+                error(31);  // number out of range
+                num = 0;
+            }
+            gen(lit, 0, num);
+            getsym();
+        }
+        /* the factor is a expression */
+        else if (sym == lparen)
+        {
+            getsym();
+            memcpy(nxtlev, fsys, sizeof nxtlev);
+            nxtlev[rparen] = true;
+            expression(nxtlev, ptx, lev);
+            if (sym == rparen)
+                getsym();
+            else error(22); // lack ')'
+        }
+        memset(nxtlev, 0, sizeof nxtlev);
+        nxtlev[lparen] = true;
+        test(fsys, nxtlev, 23);
     }
 }
 
