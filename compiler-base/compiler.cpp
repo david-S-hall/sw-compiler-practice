@@ -542,7 +542,67 @@ void statement(bool* fsys, int* ptx, int lev)
     {
         getsym();
         memcpy(nxtlev, fsys, sizeof nxtlev);
-        nxtlev[lparen]
+        nxtlev[lbrace] = true;
+        conditions(nxtlev, ptx, lev);
+
+        if (sym == lbrace) getsym();
+        else error(37); // a token '{' after condition
+
+        /* conditional jump to false end */
+        cx1 = cx;
+        gen(jpc, 0, 0);
+
+        memcpy(nxtlev, fsys, sizeof nxtlev);
+        nxtlev[rbrace] = true;
+        nxtlev[elsesym] = true;
+        statement(nxtlev, ptx, lev);
+        
+        /* unconditional jump to true end */
+        cx2 = cx;
+        gen(jmp, 0, 0);
+        code[cx1].a = cx;   // backfill the conditional jump's address
+
+        if (sym == rbrace) getsym();
+        else error(38); // a token '}' after statement
+
+        if (sym == elsesym)
+        {
+            getsym();
+            if (sym == lbrace) getsym();
+            else error(37); // statement in else block needs '{'
+
+            memcpy(nxtlev, fsys, sizeof nxtlev);
+            nxtlev[rbrace] = true;
+            statement(nxtlev, ptx, lev);
+
+            if (sym == rbrace) getsym();
+            else error(38); // statement in else block needs '}'
+        }
+        code[cx2].a = cx;
+    }
+    /* while statement parsing */
+    else if (sym == whilesym)
+    {
+        cx1 = cx;
+        getsym();
+        memcpy(nxtlev, fsys, sizeof nxtlev);
+        nxtlev[lbrace] = true;
+        condition(nxtlev, ptx, lev);
+        cx2 = cx;
+        gen(jpc, 0, 0);
+
+        if (sym == lbrace) getsym();
+        else error(37); // lack '{'
+
+        memcpy(nxtlev, fsys, sizeof nxtlev);
+        nxtlev[rbrace] = true;
+        statement(nxtlev, ptx, lev);
+
+        if (sym == rbrace) getsym();
+        else error(38); // lack '}'
+
+        gen(jmp, 0, cx1);
+        code[cx2].a = cx;
     }
 }
 
