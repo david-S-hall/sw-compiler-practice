@@ -47,7 +47,6 @@ bool declbegsys[N_SYM];			/* start symbol set of declaration */
 bool statbegsys[N_SYM];			/* start symbol set of statement */
 bool facbegsys[N_SYM];			/* start symbol set of factor */
 
-
 void init_setting()
 {
 	/* single-letter-type symbol */

@@ -273,11 +273,16 @@ void problem(int lev, int tx, bool* fsys)
     int tx0;            /* record of original tx */
     int cx0;            /* record of original cx */
     bool nxtlev[N_SYM]; /* passing symbol set for next level */
+    bool declbegsys_t[N_SYM];
 
     dx = 3;
     tx0 = tx;
     table[tx].adr = cx;
     gen(jmp, 0, 0);     /* generate jmp code */
+
+    memcpy(declbegsys_t, declbegsys, sizeof declbegsys);
+    if (lev == 1)
+        declbegsys_t[func] = false;
 
     /* declaration list parsing */
     do {
@@ -293,7 +298,8 @@ void problem(int lev, int tx, bool* fsys)
         }
 
         /* function declaration parsing */
-        while (sym == funcsym)
+        /* function declaration nesting is not allowed */
+        while (lev == 0 && sym == funcsym)
         {
             getsym();
             declaration(function, &tx, lev, &dx);
@@ -305,12 +311,9 @@ void problem(int lev, int tx, bool* fsys)
             if (sym == lbrace) getsym();	// processing {
             else error(37);
 
-            /* function declaration nesting is not allowed */
-            if(lev == 0){
-	            memcpy(nxtlev, fsys, sizeof nxtlev);
-    	        nxtlev[semicolon] = true;
-    	        problem(1, tx, nxtlev);
-			}
+            memcpy(nxtlev, fsys, sizeof nxtlev);
+            nxtlev[semicolon] = true;
+            problem(1, tx, nxtlev);
 
 			if (sym == rbrace)   // processing }
 			{
@@ -322,8 +325,8 @@ void problem(int lev, int tx, bool* fsys)
 			else error(37);
         }
 
-        test(statbegsys, declbegsys, 7);    // test if there is a correct statement start
-    } while (inset(sym, declbegsys));   // processing until no declaration symbols
+        test(statbegsys, declbegsys_t, 7);    // test if there is a correct statement start
+    } while (inset(sym, declbegsys_t));   // processing until no declaration symbols
 
     /* update symbol table & fct codes */
     code[table[tx0].adr].a = cx;
@@ -604,6 +607,61 @@ void statement(bool* fsys, int* ptx, int lev)
         gen(jmp, 0, cx1);
         code[cx2].a = cx;
     }
+    /* for statement parsing */
+    else if (sym == forsym)
+    {
+
+    }
+
+    memset(nxtlev, 0, sizeof nxtlev);
+    test(fsys, nxtlev, 19); // follow a wrong symbol
+}
+
+/*
+ * condition processing
+ */
+void condition(bool* fsys, int* ptx, int lev)
+{
+    enum SYMBOL relop;
+    bool nxtlev[N_SYM];
+
+    memcpy(nxtlev, fsys, sizeof nxtlev);
+    nxtlev[eql] = true;
+    nxtlev[neq] = true;
+    nxtlev[lss] = true;
+    nxtlev[leq] = true;
+    nxtlev[gtr] = true;
+    nxtlev[geq] = true;
+    expression(nxtlev, ptx, lev);
+    if (sym != eql && sym != neq && sym != lss && sym != leq && sym != gtr && sym != geq)
+        error(20);
+    else
+    {
+        relop = sym;
+        getsym();
+        expression(fsys, ptx, lev);
+        switch(relop)
+        {
+            case eql:
+                gen(opr, 0, 8);
+                break;
+            case neq:
+                gen(opr, 0, 9);
+                break;
+            case lss:
+                gen(opr, 0, 10);
+                break;
+            case geq:
+                gen(opr, 0, 11);
+                break;
+            case gtr:
+                gen(opr, 0, 12);
+                break;
+            case leq:
+                gen(opr, 0, 13);
+                break;
+        }
+    }
 }
 
 /*
@@ -725,6 +783,143 @@ void factor(bool* fsys, int* ptx, int lev)
         nxtlev[lparen] = true;
         test(fsys, nxtlev, 23);
     }
+}
+
+/*
+ * interpret the intermediate code
+ */
+void interpret()
+{
+    int p = 0;      /* pointer of code */
+    int b = 1;      /* base address of code */
+    int t = 0;      /* pointer of stack top */
+    Instruction i;  /* store current code */
+    int s[SIZE_STACK];  /* stack */
+
+    s[0] = 0;
+    s[1] = 0;
+    s[2] = 0;
+    s[3] = 0;
+    do {
+        i = code[p];    // load current code
+        p = p + 1;
+        switch (i.f)
+        {
+            case lit:   /* load a onto stack top */
+                t = t + 1;
+                s[t] = i.a;
+                break;
+            case opr:   /* math & logic operation */
+                switch (i.a)
+                {
+                    case 0: /* return after function calling */
+                        t = b - 1;
+                        p = s[t + 3];
+                        b = s[t + 2];
+                        break;
+                    case 1: /* inverse of stack top */
+                        s[t] = -s[t];
+                        break;
+                    case 2: /* push stack top and second sum into stack */
+                        t = t - 1;
+                        s[t] = s[t] + s[t + 1];
+                        break;
+                    case 3: /* stack second minus top */
+                        t = t - 1;
+                        s[t] = s[t] - s[t + 1];
+                        break;
+                    case 4: /* stack second times top */
+                        t = t - 1;
+                        s[t] = s[t] * s[t + 1];
+                        break;
+                    case 5: /* stack second slash top */
+                        t = t - 1;
+                        s[t] = s[t] / s[t + 1];
+                        break;
+                    case 6: /* odd judgement of stack top */
+                        s[t] = s[t] & 1;
+                        break;
+                    case 8: /* stack top and second equality judgement */
+                        t = t - 1;
+                        s[t] = (s[t] == s[t + 1]);
+                        break;
+                    case 9: /* stack top and second not-equality judgement */
+                        t = t - 1;
+                        s[t] = (s[t] != s[t + 1]);
+                        break;
+                    case 10:/* stack second less than top judgement */
+                        t = t - 1;
+                        s[t] = (s[t] < s[t + 1]);
+                        break;
+                    case 11:/* stack second larger than or equal to top judgement */
+                        t = t - 1;
+                        s[t] = (s[t] >= s[t + 1]);
+                        break;
+                    case 12:/* stack second larger than top judgement */
+                        t = t - 1;
+                        s[t] = (s[t] > s[t + 1]);
+                        break;
+                    case 13:/* stack second less than or equal to top judgement */
+                        t = t - 1;
+                        s[t] = (s[t] <= s[t + 1]);
+                        break;
+                    case 14:/* output stack top */
+                        fprintf(fresult, "%d", s[t]);
+                        t = t - 1;
+                        break;
+                    case 15:/* output line break */
+                        fprintf(fresult, "\n");
+                        break;
+                    case 16:/* read an input into stack top */
+                        t = t + 1;
+                        scanf("%d", &(s[t]));
+                        fprintf(fresult, "%d\n", s[t]);
+                        break;
+                }
+                break;
+            case lod:   /* push the value in memory into stack with current function base and offset address */
+                t = t + 1;
+                s[t] = s[base(i.l, s, b) + i.a];
+                break;
+            case sto:   /* save the stack top value into memory with current function base and offset address */
+                s[base(i.l, s, b) + i.a] = s[t];
+                t = t - 1;
+                break;
+            case cal:   /* call function */
+                s[t + 1] = base(i.l, s, b);
+                s[t + 2] = b;
+                s[t + 3] = p;
+                b = t + 1;
+                p = i.a;
+                break;
+            case ini:   /* initialize a size data space for function */
+                t = t + i.a;
+                break;
+            case jmp:   /* unconditional jump */
+                p = i.a;
+                break;
+            case jpc:   /* conditional jump */
+                if (s[t] == 0)
+                    p = i.a;
+                t = t - 1;
+                break;
+        }
+    } while (p != 0);
+}
+
+/*
+ * find base address for function with difference of level
+ */
+int base(int l, int* s, int b)
+{
+    int b1;
+    b1 = b;
+    while (l > 0)
+    {
+        b1 = s[b1];
+        l--;
+    }
+    return b1;
 }
 
 /*
