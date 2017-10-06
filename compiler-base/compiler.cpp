@@ -4,13 +4,6 @@
 #include <cctype>
 #include "compiler.h"
 
-int main()
-{
-    init();
-	for(int i = 0; i < 256; ++i)
-		printf("%d\n", ssym[i]);
-}
-
 void init()
 {
 	init_setting();
@@ -78,8 +71,8 @@ void getch()
 		}
 		ll = cc = 0;
 		line_num++;
-		printf("%d ", cx);
-		//fprintf(foutput, "%d ", cx);
+		
+		fprintf(foutput, "%d ", cx);
 		ch = ' ';
 		while (ch != 10)
 		{
@@ -89,8 +82,7 @@ void getch()
 				break;
 			}
 
-			printf("%c", ch);
-			//fprintf(foutput, "%c", ch);
+			fprintf(foutput, "%c", ch);
 			line[ll++] = ch;
 		}
 	}
@@ -282,7 +274,7 @@ void problem(int lev, int tx, bool* fsys)
 
     memcpy(declbegsys_t, declbegsys, sizeof declbegsys);
     if (lev == 1)
-        declbegsys_t[func] = false;
+        declbegsys_t[funcsym] = false;
 
     /* declaration list parsing */
     do {
@@ -425,6 +417,45 @@ void declaration(enum OBJECT tp, int *ptx, int lev, int* pdx)
 		error(4);
 }
 
+
+void forstatrange()
+{
+	int i;
+	switch (sym)
+	{
+		case ident:
+	    	int i = position(id, *ptx);
+			if (i == 0) error(11);  // a no-declaration identity
+			else
+			{
+			    switch (table[i].kind)
+			    {
+                    case variable:
+				        gen(lod, lev-table[i].level, table[i].adr);
+		                break;
+			        case function:
+				        error(21);  // cannot be a function
+				        i = 0;
+				        break;
+				    }
+				}
+				getsym();
+	    		break;
+	   	case number:
+	    	if (num > BOUND_ADR)
+			{
+				error(31);  // number out of range
+				num = 0;
+			}
+			gen(lit, 0, num);
+			getsym();
+	    	break;
+	    default:
+	    	error(40);	// lack a left range
+	    	break;
+	}
+}
+
 /*
  * statement processing
  */
@@ -546,7 +577,7 @@ void statement(bool* fsys, int* ptx, int lev)
         getsym();
         memcpy(nxtlev, fsys, sizeof nxtlev);
         nxtlev[lbrace] = true;
-        conditions(nxtlev, ptx, lev);
+        condition(nxtlev, ptx, lev);
 
         if (sym == lbrace) getsym();
         else error(37); // a token '{' after condition
@@ -559,7 +590,7 @@ void statement(bool* fsys, int* ptx, int lev)
         nxtlev[rbrace] = true;
         nxtlev[elsesym] = true;
         statement(nxtlev, ptx, lev);
-        
+
         /* unconditional jump to true end */
         cx2 = cx;
         gen(jmp, 0, 0);
@@ -610,7 +641,63 @@ void statement(bool* fsys, int* ptx, int lev)
     /* for statement parsing */
     else if (sym == forsym)
     {
+    	getsym();
+    	if (sym == ident)
+    	{
+    		i = position(id, *ptx);
+    		if (i == 0) error(11);
+    		else
+    		{
+    			if (table[i].kind != variable)
+    			{
+    				error(12);
+    				i = 0;
+    			}
+    			else
+    			{
+	    			getsym();
+	    			if (sym != insym) error(39);	// lack 'in'
+	    			else getsym();
 
+	    			forstatrange();
+	    			gen(sto, lev-table[i].level, table[i].adr);
+
+	    			if (sym != range) error(42);	// lack '...'
+	    			else getsym();
+
+	    			cx1 = cx;
+	    			gen(lod, lev-table[i].level, table[i].adr);
+	    			forstatrange();
+
+	    			/* condition judgement of 'for' range */
+	    			gen(opr, 0, 13);
+	    			/* out-of-range conditional jump */
+	    			cx2 = cx;
+	    			gen(jpc, 0, 0);
+
+	    			if (sym == lbrace)
+	    				getsym();	    		
+	    			else error(37);
+
+	    			memcpy(nxtlev, fsys, sizeof nxtlev);
+	    			nxtlev[rbrace] = true;
+	    			statement(nxtlev, ptx, lev);
+
+	    			if (sym == rbrace)
+	    				getsym();
+	    			else error(38);
+
+	    			/* load range variable */
+	    			gen(lod, lev-table[i].level, table[i].adr);
+	    			gen(lit, 0, 1);	// step of range
+	    			gen(opr, 0, 2);	// add step to variable
+	    			/* save range variable */
+	    			gen(sto, lev-table[i].level, table[i].adr);
+	    			gen(jmp, 0, cx1);
+	    			code[cx2].a = cx;
+	    		}
+    		}
+    	}	
     }
 
     memset(nxtlev, 0, sizeof nxtlev);

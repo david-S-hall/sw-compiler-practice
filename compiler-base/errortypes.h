@@ -18,7 +18,7 @@ void init_errors()
     strcmp(ERR_TP[14], "invalid call statement without function identity");
     strcmp(ERR_TP[19], "statement ending with a wrong follow symbol");
     strcmp(ERR_TP[20], "a relation operator is necessary");
-    strcmp(ERR_TP[21], "invalid conversation for function identity in expression");
+    strcmp(ERR_TP[21], "invalid conversation for a function identity");
     strcmp(ERR_TP[24], "a wrong start token for factor");
     strcmp(ERR_TP[30], "too long for a number");
     strcmp(ERR_TP[31], "number is out-of-range");
@@ -28,6 +28,10 @@ void init_errors()
     strcmp(ERR_TP[36], "function needs '()' token");
     strcmp(ERR_TP[37], "statement needs start after '{' token");
     strcmp(ERR_TP[38], "statement needs ending with '}' token");
+    strcmp(ERR_TP[39], "a for statement needs token 'in'");
+    strcmp(ERR_TP[40], "a for statement needs a left range");
+    strcmp(ERR_TP[41], "a for statement needs a right range");
+    strcmp(ERR_TP[42], "a for statement needs a range symbol '...'");
     strcmp(ERR_TP[60], "program is too long --end");
     strcmp(ERR_TP[61], "Displacement address is too big --end");
 }
