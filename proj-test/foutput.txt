@@ -1,0 +1,8 @@
+0 var i;
+varsym1 var j;
+1 var sum;
+1 func test(){
+1   var a;
+2   a = 1;
+6   read(j);
+10   if a < j {

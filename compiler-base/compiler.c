@@ -1,7 +1,5 @@
-#include <cstdio>
-#include <iostream>
-#include <cstdlib>
-#include <cctype>
+#include <string.h>
+#include <ctype.h>
 #include "compiler.h"
 
 void init()
@@ -51,7 +49,7 @@ int mulset(bool* sr, bool* s1, bool* s2, int n)
 
 void error(int n)
 {
-    // fprintf(ferr, "# line %d: %s\n", line_num, ERR_TP[n]);
+    fprintf(ferr, "# line %d: %s\n", line_num, ERR_TP[n]);
 
     err_num++;
     if(err_num > MAX_ERR)
@@ -64,14 +62,15 @@ void getch()
 {
 	if (cc == ll)
 	{
-		if (feof(fin))
-		{
-			printf("Promgram is incomplete.");
-			exit(1);
+		if (feof(fin)){
+		    ch = '$';
+		    return;
 		}
+
 		ll = cc = 0;
 		line_num++;
-		
+
+		printf("%d ", cx);
 		fprintf(foutput, "%d ", cx);
 		ch = ' ';
 		while (ch != 10)
@@ -81,7 +80,7 @@ void getch()
 				line[ll] = 0;
 				break;
 			}
-
+            printf("%c", ch);
 			fprintf(foutput, "%c", ch);
 			line[ll++] = ch;
 		}
@@ -123,91 +122,87 @@ void getsym()
         else        // current symbol is identity
             sym = ident;
 	}
-	else
+	else if (isdigit(ch))    // current symbol is number
     {
-        if (isdigit(ch))    // current symbol is number
+        k = 0;
+        num = 0;
+        sym = number;
+        do {
+            num = 10 * num + ch - '0';
+            k++;
+            getch();
+        } while (isdigit(ch));  // gain the whole number
+        k--;
+        if (k > LEN_NUM)
+            error(30);
+    }
+    else if (ch == '.')	// test symbol '...' for 'for _ in _ ... _' structure
+    {
+        getch();
+        if(ch == '.')
         {
-            k = 0;
-            num = 0;
-            sym = number;
-            do {
-                num = 10 * num + ch - '0';
-                k++;
+            getch();
+            if(ch == '.')
+            {
+                sym = range;
                 getch();
-            } while (isdigit(ch));  // gain the whole number
-            k--;
-            if (k > LEN_NUM)
-                error(30);
+            }
+            else sym = nul;
+        }
+        else sym = nul;
+    }
+    else if (ch == '=')	// test symbol '==' or '='
+    {
+        getch();
+        if (ch == '=')
+        {
+            sym = eql;
+            getch();
         }
         else
+            sym = becomes;
+    }
+    else if (ch == '!') // test symbol '!='
+    {
+        getch();
+        if (ch == '=')
         {
-            if (ch == '.')	// test symbol '...' for 'for _ in _ ... _' structure
-            {
-                getch();
-                if(ch == '.')
-                {
-                    getch();
-                    if(ch == '.')
-                    {
-                        sym = range;
-                        getch();
-                    }
-                    else sym = nul;
-                }
-                else sym = nul;
-            }
-            else if (ch == '=')	// test symbol '==' or '='
-            {
-                getch();
-                if (ch == '=')
-                {
-                    sym = eql;
-                    getch();
-                }
-                else
-                    sym = becomes;
-            }
-            else if (ch == '!') // test symbol '!='
-            {
-                getch();
-                if (ch == '=')
-                {
-                    sym = neq;
-                    getch();
-                }
-                else
-                    sym = nul;
-            }
-            else if (ch == '>') // test symbol '>=' or '>'
-            {
-                getch();
-                if (ch == '=')
-                {
-                    sym = geq;
-                    getch();
-                }
-                else
-                    sym = gtr;
-            }
-            else if (ch == '<')	// test symbol '<=' or '<'
-            {
-                getch();
-                if (ch == '=')
-                {
-                    sym = leq;
-                    getch();
-                }
-                else
-                    sym = lss;
-            }
-            else	// other single-char-type symbols
-            {
-                sym = ssym[ch];
-                getch();
-            }
+            sym = neq;
+            getch();
         }
-	}
+        else
+            sym = nul;
+    }
+    else if (ch == '>') // test symbol '>=' or '>'
+    {
+        getch();
+        if (ch == '=')
+        {
+            sym = geq;
+            getch();
+        }
+        else
+            sym = gtr;
+    }
+    else if (ch == '<')	// test symbol '<=' or '<'
+    {
+        getch();
+        if (ch == '=')
+        {
+            sym = leq;
+            getch();
+        }
+        else
+            sym = lss;
+    }
+    else	// other single-char-type symbols
+    {
+        sym = ssym[ch];
+        if (sym != period)
+            getch();
+    }
 }
+
 
 /*
  * generate fct codes
@@ -216,7 +211,7 @@ void getsym()
  * y: Instruction.l
  * z: Instruction.a
  */
-void gen(enum FCT x, int y, int z)
+void gen(FCT x, int y, int z)
 {
     if (cx >= MAX_CX)
     {
@@ -364,7 +359,7 @@ void problem(int lev, int tx, bool* fsys)
  * lev:		symbol is in main block or function body
  * pdx:		relative address for current variable
  */
-void enter(enum OBJECT k, int* ptx, int lev, int* pdx)
+void enter(OBJECT k, int* ptx, int lev, int* pdx)
 {
 	(*ptx)++;
 	strcpy(table[(*ptx)].name, id);
@@ -406,7 +401,7 @@ int position(char* id, int tx)
  * lev:		symbol is in main block or function body
  * pdx:		relative address for current variable
  */
-void declaration(enum OBJECT tp, int *ptx, int lev, int* pdx)
+void declaration(OBJECT tp, int *ptx, int lev, int* pdx)
 {
 	if (sym == ident)
 	{
@@ -418,13 +413,13 @@ void declaration(enum OBJECT tp, int *ptx, int lev, int* pdx)
 }
 
 
-void forstatrange()
+void forstatrange(bool* fsys, int* ptx, int lev)
 {
 	int i;
 	switch (sym)
 	{
 		case ident:
-	    	int i = position(id, *ptx);
+	    	i = position(id, *ptx);
 			if (i == 0) error(11);  // a no-declaration identity
 			else
 			{
@@ -659,7 +654,7 @@ void statement(bool* fsys, int* ptx, int lev)
 	    			if (sym != insym) error(39);	// lack 'in'
 	    			else getsym();
 
-	    			forstatrange();
+	    			forstatrange(fsys, ptx, lev);
 	    			gen(sto, lev-table[i].level, table[i].adr);
 
 	    			if (sym != range) error(42);	// lack '...'
@@ -667,7 +662,7 @@ void statement(bool* fsys, int* ptx, int lev)
 
 	    			cx1 = cx;
 	    			gen(lod, lev-table[i].level, table[i].adr);
-	    			forstatrange();
+	    			forstatrange(fsys, ptx, lev);
 
 	    			/* condition judgement of 'for' range */
 	    			gen(opr, 0, 13);
@@ -676,7 +671,7 @@ void statement(bool* fsys, int* ptx, int lev)
 	    			gen(jpc, 0, 0);
 
 	    			if (sym == lbrace)
-	    				getsym();	    		
+	    				getsym();
 	    			else error(37);
 
 	    			memcpy(nxtlev, fsys, sizeof nxtlev);
@@ -697,7 +692,7 @@ void statement(bool* fsys, int* ptx, int lev)
 	    			code[cx2].a = cx;
 	    		}
     		}
-    	}	
+    	}
     }
 
     memset(nxtlev, 0, sizeof nxtlev);
@@ -709,7 +704,7 @@ void statement(bool* fsys, int* ptx, int lev)
  */
 void condition(bool* fsys, int* ptx, int lev)
 {
-    enum SYMBOL relop;
+    SYMBOL relop;
     bool nxtlev[N_SYM];
 
     memcpy(nxtlev, fsys, sizeof nxtlev);
@@ -747,6 +742,8 @@ void condition(bool* fsys, int* ptx, int lev)
             case leq:
                 gen(opr, 0, 13);
                 break;
+            default:
+                break;
         }
     }
 }
@@ -756,7 +753,7 @@ void condition(bool* fsys, int* ptx, int lev)
  */
 void expression(bool* fsys, int* ptx, int lev)
 {
-    enum SYMBOL addop = nul;
+    SYMBOL addop = nul;
     bool nxtlev[N_SYM];
 
     if (sym == plus || sym == minus) // expression start with '+'|'-'
@@ -792,7 +789,7 @@ void expression(bool* fsys, int* ptx, int lev)
  */
 void term(bool* fsys, int* ptx, int lev)
 {
-    enum SYMBOL mulop;
+    SYMBOL mulop;
     bool nxtlev[N_SYM];
 
     /* term parsing */
@@ -959,6 +956,7 @@ void interpret()
                         break;
                     case 16:/* read an input into stack top */
                         t = t + 1;
+                        printf("Enter the variable:\n");
                         scanf("%d", &(s[t]));
                         fprintf(fresult, "%d\n", s[t]);
                         break;

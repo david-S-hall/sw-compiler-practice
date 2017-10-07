@@ -1,0 +1,33 @@
+# depslib dependency file v1.0
+1507350364 source:e:\work\compiler\sw-compiler\compiler-base\test\compiler.cpp
+	"compiler.h"
+
+1507363165 e:\work\compiler\sw-compiler\compiler-base\test\compiler.h
+	<stdio.h>
+	"setting.h"
+
+1507362960 e:\work\compiler\sw-compiler\compiler-base\test\setting.h
+	<stdbool.h>
+
+1507350915 source:e:\work\compiler\sw-compiler\compiler-base\test\init.cpp
+	<cstring>
+	"compiler.h"
+
+1507350209 source:e:\work\compiler\sw-compiler\compiler-base\test\main.cpp
+	<cstdio>
+	<cstdlib>
+	"compiler.h"
+
+1507363147 source:e:\work\compiler\sw-compiler\compiler-base\test\compiler.c
+	<string.h>
+	"compiler.h"
+
+1507362426 source:e:\work\compiler\sw-compiler\compiler-base\test\init.c
+	<string.h>
+	"compiler.h"
+
+1507363044 source:e:\work\compiler\sw-compiler\compiler-base\test\main.c
+	<stdio.h>
+	<stdlib.h>
+	"compiler.h"
+
