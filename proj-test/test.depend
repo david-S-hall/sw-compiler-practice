@@ -31,3 +31,24 @@
 	<stdlib.h>
 	"compiler.h"
 
+1507381497 source:e:\work\compiler\sw-compiler\proj-test\compiler.c
+	<string.h>
+	<ctype.h>
+	"compiler.h"
+
+1507380445 e:\work\compiler\sw-compiler\proj-test\compiler.h
+	<stdio.h>
+	"setting.h"
+
+1507380300 e:\work\compiler\sw-compiler\proj-test\setting.h
+	<stdbool.h>
+
+1507380874 source:e:\work\compiler\sw-compiler\proj-test\init.c
+	<string.h>
+	"compiler.h"
+
+1507381541 source:e:\work\compiler\sw-compiler\proj-test\main.c
+	<stdio.h>
+	<stdlib.h>
+	"compiler.h"
+

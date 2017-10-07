@@ -1,8 +1,1 @@
-# line 2: declaration has no primary token ';'
-# line 3: declaration has no primary token ';'
-# line 4: declaration has no primary token ';'
-# line 6: declaration has no primary token ';'
-# line 6: statement needs start after '{' token
-# line 6: lack of a statement start token
-# line 7: a wrong follow token after statement
-# line 8: parsing incomplete
+=== Build finished: 

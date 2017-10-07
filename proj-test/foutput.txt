@@ -1,8 +1,18 @@
 0 var i;
-varsym1 var j;
+1 var j;
 1 var sum;
 1 func test(){
 1   var a;
 2   a = 1;
-6   read(j);
-10   if a < j {
+5   read(j);
+7   if a < j {
+10       a = a + 1;
+15     };
+16   print(a);
+18 }
+19 call test();
+21 sum = 0;
+23 for i in 1 ...10 {
+29     sum = sum + 1;
+33   };
+38 print(sum);Parsing success ===

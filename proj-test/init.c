@@ -109,4 +109,10 @@ void init_proc()
 
 	tableswitch = 1;
 	listswitch = 1;
+
+    fresult = fopen("fresult.txt", "w");
+    ferr = fopen("ferr.txt", "w");
+    ftable = fopen("ftable.txt", "w");
+    fcode = fopen("fcode.txt", "w");
+    foutput = fopen("foutput.txt", "w");
 }

@@ -3,9 +3,6 @@
 
 #include "compiler.h"
 
-void parsing();
-void processing();
-
 int main()
 {
     /* loading the input & output files */
@@ -19,27 +16,8 @@ int main()
         exit(1);
     }
 
-    fresult = fopen("fresult.txt", "w");
-    ferr = fopen("ferr.txt", "w");
-    ftable = fopen("ftable.txt", "w");
-    fcode = fopen("fcode.txt", "w");
-    foutput = fopen("foutput.txt", "w");
-
     parsing();
-
+    processing();
 }
 
-void parsing()
-{
-    bool nxtlev[N_SYM];
 
-    init();
-    getsym();
-
-    addset(nxtlev, declbegsys, statbegsys, N_SYM);
-    nxtlev[period] = true;
-    problem(0, 0, nxtlev);
-
-    if (sym != period)
-        error(9);
-}

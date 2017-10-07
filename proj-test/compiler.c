@@ -2,6 +2,17 @@
 #include <ctype.h>
 #include "compiler.h"
 
+char symNames[N_SYM][15] =
+{
+    "null", "identity", "number", "plus", "minus",
+    "times", "slash", "becomes", "eql", "neq",
+    "lss", "leq", "gtr", "geq", "lparen",
+    "rparen", "lbrace", "rbrace", "range", "semicolon",
+    "ifsym", "elsesym", "forsym", "insym", "whilesym",
+    "readsym", "printsym", "callsym", "varsym", "funcsym",
+    "period"
+};
+
 void init()
 {
 	init_setting();
@@ -9,9 +20,48 @@ void init()
 	init_proc();
 }
 
-/*
- *
- */
+void parsing()
+{
+    bool nxtlev[N_SYM];
+
+    init();
+    getsym();
+
+    addset(nxtlev, declbegsys, statbegsys, N_SYM);
+    nxtlev[period] = true;
+    problem(0, 0, nxtlev);
+
+    if (sym != period)
+        error(9);
+}
+
+void processing()
+{
+    fprintf(ferr, "=== Build finished: ");
+    if (err_num)
+    {
+        fprintf(ferr, "%d error(s)", err_num);
+        if (err_num > MAX_ERR)
+        {
+            fprintf(ferr, ", more errors are collapsed");
+        }
+        fprintf(ferr, " ===\n");
+        fclose(fin);
+        fclose(ferr);
+        exit(0);
+    }
+    fprintf(foutput, "Parsing success ===\n");
+
+    listall();
+    fclose(fcode);
+
+    interpret();
+    fclose(fresult);
+
+    fclose(ftable);
+    fclose(foutput);
+}
+
 int inset(int e, bool* s)
 {
 	return s[e];
@@ -49,13 +99,14 @@ int mulset(bool* sr, bool* s1, bool* s2, int n)
 
 void error(int n)
 {
-    fprintf(ferr, "# line %d: %s\n", line_num, ERR_TP[n]);
-
     err_num++;
     if(err_num > MAX_ERR)
     {
-        exit(1);
+        processing();
+        return;
     }
+
+    fprintf(ferr, "# line %d: %s\n", line_num, ERR_TP[n]);
 }
 
 void getch()
@@ -70,7 +121,7 @@ void getch()
 		ll = cc = 0;
 		line_num++;
 
-		printf("%d ", cx);
+		//printf("%d ", cx);
 		fprintf(foutput, "%d ", cx);
 		ch = ' ';
 		while (ch != 10)
@@ -80,7 +131,7 @@ void getch()
 				line[ll] = 0;
 				break;
 			}
-            printf("%c", ch);
+            //printf("%c", ch);
 			fprintf(foutput, "%c", ch);
 			line[ll++] = ch;
 		}
@@ -91,6 +142,9 @@ void getch()
 
 void getsym()
 {
+    if (sym == period)
+        return;
+
 	int i, j, k;
 
 	while (ch == ' ' || ch == 10 || ch == 9)
@@ -278,7 +332,7 @@ void problem(int lev, int tx, bool* fsys)
         {
             getsym();
             declaration(variable, &tx, lev, &dx);
-            getsym();
+
             if (sym == semicolon)
                 getsym();
             else error(5);
@@ -299,7 +353,7 @@ void problem(int lev, int tx, bool* fsys)
             else error(37);
 
             memcpy(nxtlev, fsys, sizeof nxtlev);
-            nxtlev[semicolon] = true;
+            nxtlev[rbrace] = true;
             problem(1, tx, nxtlev);
 
 			if (sym == rbrace)   // processing }
@@ -309,7 +363,10 @@ void problem(int lev, int tx, bool* fsys)
 				nxtlev[funcsym] = true;
 				test(nxtlev, fsys, 6);  // after a function should be a statement or another function
 			}
-			else error(37);
+			else{
+                fprintf(fresult, "lev=%d %s ", lev, symNames[sym]);
+                error(38);
+            }
         }
 
         test(statbegsys, declbegsys_t, 7);    // test if there is a correct statement start
@@ -348,7 +405,7 @@ void problem(int lev, int tx, bool* fsys)
     gen(opr, 0, 0);
     memset(nxtlev, 0, sizeof nxtlev);
     test(fsys, nxtlev, 8);
-    listcode(cx0);
+    // listcode(cx0);
 }
 
 /*
@@ -459,240 +516,245 @@ void statement(bool* fsys, int* ptx, int lev)
     int i, cx1, cx2;
     bool nxtlev[N_SYM];
 
-    /* assignment statement parsing */
-    if (sym == ident)
-    {
-        i = position(id, *ptx);
-        if (i == 0) error(11);
-        else
-        {
-            if (table[i].kind != variable)
-                error(12);
-            else
-            {
-                getsym();
-                if(sym == becomes)
-                    getsym();
-                else error(13); // no becomes symbol
-                /* expression parsing */
-                memcpy(nxtlev, fsys, sizeof nxtlev);
-                expression(nxtlev, ptx, lev);
-                if (i != 0)
-                    gen(sto, lev-table[i].level, table[i].adr);
-            }
-        }
-    }
-    /* read statement parsing */
-    else if (sym == readsym)
-    {
-        getsym();
-        if(sym != lparen)   // lack of '('
-            error(34);
-        else
-        {
-            getsym();
-            if (sym == ident)
-                i = position(id, *ptx);
-            else i = 0;
-
-            if (i == 0) error(35);  // identity in read() still not declared
-            else
-            {
-                gen(opr, 0, 16);    // generate input instruction
-                gen(sto, lev-table[i].level, table[i].adr); // send stack top into variable
-            }
-            getsym();
-        }
-        if (sym != rparen)
-        {
-            error(33);  // lacking token ')'
-            while (!inset(sym, fsys))   // recover with last level follow set
-                getsym();
-        }
-        else getsym();
-    }
-    /* write statement parsing */
-    else if (sym == printsym)
-    {
-        getsym();
-        if(sym != lparen)   // lack of '('
-            error(34);
-        else
-        {
-            getsym();
-            if (sym == ident)
-                i = position(id, *ptx);
-            else i = 0;
-
-            if (i == 0) error(35);  // identity in print() still not declared
-            else
-            {
-                gen(opr, 0, 14);    // generate output instruction
-                gen(opr, 0, 15);    // generate line instruction
-            }
-            getsym();
-        }
-        if (sym != rparen)
-        {
-            error(33);  // lacking token ')'
-            while (!inset(sym, fsys))   // recover with last level follow set
-                getsym();
-        }
-        else getsym();
-    }
-    /* call statement parsing */
-    else if (sym == callsym)
-    {
-        getsym();
-        if (sym != ident)
-            error(14);  // lacks call identity
-        else
+    while (inset(sym, statbegsys)){
+        /* assignment statement parsing */
+        if (sym == ident)
         {
             i = position(id, *ptx);
-            if (i == 0)
-                error(11);  // function identity without declaration
+            if (i == 0) error(11);
             else
             {
-                if (table[i].kind == function)
-                    gen(cal, lev-table[i].level, table[i].adr);
-                else error(15); // identity isn't a function
+                if (table[i].kind != variable)
+                    error(12);
+                else
+                {
+                    getsym();
+                    if(sym == becomes)
+                        getsym();
+                    else error(13); // no becomes symbol
+                    /* expression parsing */
+                    memcpy(nxtlev, fsys, sizeof nxtlev);
+                    expression(nxtlev, ptx, lev);
+                    if (i != 0)
+                        gen(sto, lev-table[i].level, table[i].adr);
+                }
             }
-            getsym();
-
-            // processing '()'
-            if (sym == lparen) getsym();
-            else error(36);
-            if (sym == rparen) getsym();
-            else error(36);
         }
-    }
-    /* if statement parsing */
-    else if (sym == ifsym)
-    {
-        getsym();
-        memcpy(nxtlev, fsys, sizeof nxtlev);
-        nxtlev[lbrace] = true;
-        condition(nxtlev, ptx, lev);
-
-        if (sym == lbrace) getsym();
-        else error(37); // a token '{' after condition
-
-        /* conditional jump to false end */
-        cx1 = cx;
-        gen(jpc, 0, 0);
-
-        memcpy(nxtlev, fsys, sizeof nxtlev);
-        nxtlev[rbrace] = true;
-        nxtlev[elsesym] = true;
-        statement(nxtlev, ptx, lev);
-
-        /* unconditional jump to true end */
-        cx2 = cx;
-        gen(jmp, 0, 0);
-        code[cx1].a = cx;   // backfill the conditional jump's address
-
-        if (sym == rbrace) getsym();
-        else error(38); // a token '}' after statement
-
-        if (sym == elsesym)
+        /* read statement parsing */
+        else if (sym == readsym)
         {
             getsym();
+            if(sym != lparen)   // lack of '('
+                error(34);
+            else
+            {
+                getsym();
+                if (sym == ident)
+                    i = position(id, *ptx);
+                else i = 0;
+
+                if (i == 0) error(35);  // identity in read() still not declared
+                else
+                {
+                    gen(opr, 0, 16);    // generate input instruction
+                    gen(sto, lev-table[i].level, table[i].adr); // send stack top into variable
+                }
+                getsym();
+            }
+            if (sym != rparen)
+            {
+                error(33);  // lacking token ')'
+                while (!inset(sym, fsys))   // recover with last level follow set
+                    getsym();
+            }
+            else getsym();
+        }
+        /* write statement parsing */
+        else if (sym == printsym)
+        {
+            getsym();
+            if(sym != lparen)   // lack of '('
+                error(34);
+            else
+            {
+                getsym();
+                if (sym == ident)
+                    i = position(id, *ptx);
+                else i = 0;
+
+                if (i == 0) error(35);  // identity in print() still not declared
+                else
+                {
+                    gen(opr, 0, 14);    // generate output instruction
+                    gen(opr, 0, 15);    // generate line instruction
+                }
+                getsym();
+            }
+            if (sym != rparen)
+            {
+                error(33);  // lacking token ')'
+                while (!inset(sym, fsys))   // recover with last level follow set
+                    getsym();
+            }
+            else getsym();
+        }
+        /* call statement parsing */
+        else if (sym == callsym)
+        {
+            getsym();
+            if (sym != ident)
+                error(14);  // lacks call identity
+            else
+            {
+                i = position(id, *ptx);
+                if (i == 0)
+                    error(11);  // function identity without declaration
+                else
+                {
+                    if (table[i].kind == function)
+                        gen(cal, lev-table[i].level, table[i].adr);
+                    else error(15); // identity isn't a function
+                }
+                getsym();
+
+                // processing '()'
+                if (sym == lparen) getsym();
+                else error(36);
+                if (sym == rparen) getsym();
+                else error(36);
+            }
+        }
+        /* if statement parsing */
+        else if (sym == ifsym)
+        {
+            getsym();
+            memcpy(nxtlev, fsys, sizeof nxtlev);
+            nxtlev[lbrace] = true;
+            condition(nxtlev, ptx, lev);
+
             if (sym == lbrace) getsym();
-            else error(37); // statement in else block needs '{'
+            else error(37); // a token '{' after condition
+
+            /* conditional jump to false end */
+            cx1 = cx;
+            gen(jpc, 0, 0);
+
+            memcpy(nxtlev, fsys, sizeof nxtlev);
+            nxtlev[rbrace] = true;
+            nxtlev[elsesym] = true;
+            statement(nxtlev, ptx, lev);
+
+            /* unconditional jump to true end */
+            cx2 = cx;
+            gen(jmp, 0, 0);
+            code[cx1].a = cx;   // backfill the conditional jump's address
+
+            if (sym == rbrace) getsym();
+            else error(38); // a token '}' after statement
+
+            if (sym == elsesym)
+            {
+                getsym();
+                if (sym == lbrace) getsym();
+                else error(37); // statement in else block needs '{'
+
+                memcpy(nxtlev, fsys, sizeof nxtlev);
+                nxtlev[rbrace] = true;
+                statement(nxtlev, ptx, lev);
+
+                if (sym == rbrace) getsym();
+                else error(38); // statement in else block needs '}'
+            }
+            code[cx2].a = cx;
+        }
+        /* while statement parsing */
+        else if (sym == whilesym)
+        {
+            cx1 = cx;
+            getsym();
+            memcpy(nxtlev, fsys, sizeof nxtlev);
+            nxtlev[lbrace] = true;
+            condition(nxtlev, ptx, lev);
+            cx2 = cx;
+            gen(jpc, 0, 0);
+
+            if (sym == lbrace) getsym();
+            else error(37); // lack '{'
 
             memcpy(nxtlev, fsys, sizeof nxtlev);
             nxtlev[rbrace] = true;
             statement(nxtlev, ptx, lev);
 
             if (sym == rbrace) getsym();
-            else error(38); // statement in else block needs '}'
+            else error(38); // lack '}'
+
+            gen(jmp, 0, cx1);
+            code[cx2].a = cx;
         }
-        code[cx2].a = cx;
-    }
-    /* while statement parsing */
-    else if (sym == whilesym)
-    {
-        cx1 = cx;
-        getsym();
-        memcpy(nxtlev, fsys, sizeof nxtlev);
-        nxtlev[lbrace] = true;
-        condition(nxtlev, ptx, lev);
-        cx2 = cx;
-        gen(jpc, 0, 0);
+        /* for statement parsing */
+        else if (sym == forsym)
+        {
+        	getsym();
+        	if (sym == ident)
+        	{
+        		i = position(id, *ptx);
+        		if (i == 0) error(11);
+        		else
+        		{
+        			if (table[i].kind != variable)
+        			{
+        				error(12);
+        				i = 0;
+        			}
+        			else
+        			{
+    	    			getsym();
+    	    			if (sym != insym) error(39);	// lack 'in'
+    	    			else getsym();
 
-        if (sym == lbrace) getsym();
-        else error(37); // lack '{'
+    	    			forstatrange(fsys, ptx, lev);
+    	    			gen(sto, lev-table[i].level, table[i].adr);
 
-        memcpy(nxtlev, fsys, sizeof nxtlev);
-        nxtlev[rbrace] = true;
-        statement(nxtlev, ptx, lev);
+    	    			if (sym != range) error(42);	// lack '...'
+    	    			else getsym();
 
-        if (sym == rbrace) getsym();
-        else error(38); // lack '}'
+    	    			cx1 = cx;
+    	    			gen(lod, lev-table[i].level, table[i].adr);
+    	    			forstatrange(fsys, ptx, lev);
 
-        gen(jmp, 0, cx1);
-        code[cx2].a = cx;
-    }
-    /* for statement parsing */
-    else if (sym == forsym)
-    {
-    	getsym();
-    	if (sym == ident)
-    	{
-    		i = position(id, *ptx);
-    		if (i == 0) error(11);
-    		else
-    		{
-    			if (table[i].kind != variable)
-    			{
-    				error(12);
-    				i = 0;
-    			}
-    			else
-    			{
-	    			getsym();
-	    			if (sym != insym) error(39);	// lack 'in'
-	    			else getsym();
+    	    			/* condition judgement of 'for' range */
+    	    			gen(opr, 0, 13);
+    	    			/* out-of-range conditional jump */
+    	    			cx2 = cx;
+    	    			gen(jpc, 0, 0);
 
-	    			forstatrange(fsys, ptx, lev);
-	    			gen(sto, lev-table[i].level, table[i].adr);
+    	    			if (sym == lbrace)
+    	    				getsym();
+    	    			else error(37);
 
-	    			if (sym != range) error(42);	// lack '...'
-	    			else getsym();
+    	    			memcpy(nxtlev, fsys, sizeof nxtlev);
+    	    			nxtlev[rbrace] = true;
+    	    			statement(nxtlev, ptx, lev);
 
-	    			cx1 = cx;
-	    			gen(lod, lev-table[i].level, table[i].adr);
-	    			forstatrange(fsys, ptx, lev);
+    	    			if (sym == rbrace)
+    	    				getsym();
+    	    			else error(38);
 
-	    			/* condition judgement of 'for' range */
-	    			gen(opr, 0, 13);
-	    			/* out-of-range conditional jump */
-	    			cx2 = cx;
-	    			gen(jpc, 0, 0);
-
-	    			if (sym == lbrace)
-	    				getsym();
-	    			else error(37);
-
-	    			memcpy(nxtlev, fsys, sizeof nxtlev);
-	    			nxtlev[rbrace] = true;
-	    			statement(nxtlev, ptx, lev);
-
-	    			if (sym == rbrace)
-	    				getsym();
-	    			else error(38);
-
-	    			/* load range variable */
-	    			gen(lod, lev-table[i].level, table[i].adr);
-	    			gen(lit, 0, 1);	// step of range
-	    			gen(opr, 0, 2);	// add step to variable
-	    			/* save range variable */
-	    			gen(sto, lev-table[i].level, table[i].adr);
-	    			gen(jmp, 0, cx1);
-	    			code[cx2].a = cx;
-	    		}
-    		}
-    	}
+    	    			/* load range variable */
+    	    			gen(lod, lev-table[i].level, table[i].adr);
+    	    			gen(lit, 0, 1);	// step of range
+    	    			gen(opr, 0, 2);	// add step to variable
+    	    			/* save range variable */
+    	    			gen(sto, lev-table[i].level, table[i].adr);
+    	    			gen(jmp, 0, cx1);
+    	    			code[cx2].a = cx;
+    	    		}
+        		}
+        	}
+        }
+        if (sym == semicolon)
+            getsym();
+        else error(5);
     }
 
     memset(nxtlev, 0, sizeof nxtlev);
@@ -948,10 +1010,12 @@ void interpret()
                         s[t] = (s[t] <= s[t + 1]);
                         break;
                     case 14:/* output stack top */
+                        printf("%d", s[t]);
                         fprintf(fresult, "%d", s[t]);
                         t = t - 1;
                         break;
                     case 15:/* output line break */
+                        puts("");
                         fprintf(fresult, "\n");
                         break;
                     case 16:/* read an input into stack top */
@@ -1017,7 +1081,8 @@ void listcode(int cx0)
         puts("");
         for(int i = cx0; i < cx; ++i)
         {
-            printf("%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
+            // printf("%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
+            fprintf(fcode,"%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
         }
     }
 }
@@ -1031,7 +1096,7 @@ void listall()
     {
         for (int i = 0; i < cx; ++i)
         {
-            printf("%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
+            // printf("%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
             fprintf(fcode,"%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
         }
     }
