@@ -46,20 +46,23 @@ void processing()
             fprintf(ferr, ", more errors are collapsed");
         }
         fprintf(ferr, " ===\n");
-        fclose(fin);
-        fclose(ferr);
-        exit(0);
     }
-    fprintf(foutput, "Parsing success ===\n");
+    else
+    {
+        fprintf(ferr, "Parsing success ===\n");
 
-    listall();
-    fclose(fcode);
+        listall();
+        fclose(fcode);
 
-    interpret();
-    fclose(fresult);
+        interpret();
+        fclose(fresult);
+    }
 
+    fclose(fin);
+    fclose(ferr);
     fclose(ftable);
     fclose(foutput);
+    if(err_num) exit(0);
 }
 
 int inset(int e, bool* s)
