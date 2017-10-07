@@ -2,10 +2,8 @@
 #define COMPILER_H_INCLUDED
 
 #include <stdio.h>
-
-#define __DEBUG__
-
 #include "setting.h"
+
 
 typedef struct TableStruct
 {
@@ -67,6 +65,9 @@ int inset(int e, bool* s);
 int addset(bool* sr, bool* s1, bool* s2, int n);
 int subset(bool* sr, bool* s1, bool* s2, int n);
 int mulset(bool* sr, bool* s1, bool* s2, int n);
+
+void parsing();
+void processing();
 void interpret();
 void listcode(int cx0);
 void listall();
