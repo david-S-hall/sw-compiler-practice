@@ -26,8 +26,9 @@ void init_setting()
 	wsym[5] = insym;
 	wsym[6] = printsym;
 	wsym[7] = readsym;
-	wsym[8] = varsym;
-    wsym[9] = whilesym;
+	wsym[8] = returnsym;
+	wsym[9] = varsym;
+    wsym[10] = whilesym;
 
 	/* reversed words dict */
 	strcpy(word[0], "call");
@@ -38,8 +39,9 @@ void init_setting()
 	strcpy(word[5], "in");
 	strcpy(word[6], "print");
 	strcpy(word[7], "read");
-	strcpy(word[8], "var");
-	strcpy(word[9], "while");
+	strcpy(word[8], "return");
+	strcpy(word[9], "var");
+	strcpy(word[10], "while");
 
 	/* fct code dict */
 	strcpy(mnemonic[lit], "lit");
@@ -77,7 +79,7 @@ void init_errors()
     strcpy(ERR_TP[4], "declaration lacks identity");
     strcpy(ERR_TP[5], "declaration has no primary token ';'");
     strcpy(ERR_TP[6], "a wrong statement start token or function declaration");
-    strcpy(ERR_TP[7], "lack of a statement start token");
+    strcpy(ERR_TP[7], "a wrong follow token after declaration");
     strcpy(ERR_TP[8], "a wrong follow token after statement");
     strcpy(ERR_TP[9], "parsing incomplete");
     strcpy(ERR_TP[11], "a no-declaration identity");
@@ -108,6 +110,7 @@ void init_errors()
 
 void init_proc()
 {
+    end_tag = 0;
 	err_num = 0;
 	line_num = 0;
 	cc = ll = cx = 0;

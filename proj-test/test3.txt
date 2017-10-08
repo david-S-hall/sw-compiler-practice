@@ -1,14 +1,14 @@
 var i;
 var j;
 var sum;
-func test(){
+func test(){/*
   var a;
   a = 1;
   read(j);
   if a < j {
       a = a + 1;
     };
-  print(a);
+  print(a);*/
 }
 func some(){
   var t;

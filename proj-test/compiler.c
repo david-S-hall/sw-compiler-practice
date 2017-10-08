@@ -2,6 +2,8 @@
 #include <ctype.h>
 #include "compiler.h"
 
+#undef __DEBUG__
+
 char symNames[N_SYM][15] =
 {
     "null", "identity", "number", "plus", "minus",
@@ -62,7 +64,6 @@ void processing()
     fclose(ferr);
     fclose(ftable);
     fclose(foutput);
-    if(err_num) exit(0);
 }
 
 int inset(int e, bool* s)
@@ -114,10 +115,12 @@ void error(int n)
 
 void getch()
 {
+    if (end_tag) return;
 	if (cc == ll)
 	{
 		if (feof(fin)){
 		    ch = '$';
+		    end_tag = 1;
 		    return;
 		}
 
@@ -274,6 +277,33 @@ void getsym()
         else
             sym = minus;
     }
+    else if (ch == '/')
+    {
+        getch();
+        if (ch == '*')
+        {
+            char a = 0, b = 0;
+            getch();
+            a = ch;
+            while(1)
+            {
+                b = a;
+                getch();
+                a = ch;
+                /* normal break for comment ending */
+                if (b == '*' && a == '/')
+                    break;
+                /* special judge for EOF break */
+                if (end_tag)
+                    break;
+            }
+            getch();
+            getsym();
+            return;
+        }
+        else
+            sym = slash;
+    }
     else	// other single-char-type symbols
     {
         sym = ssym[ch];
@@ -344,7 +374,8 @@ void problem(int lev, int tx, bool* fsys)
     dx = 3;
     tx0 = tx;
     table[tx].adr = cx;
-    gen(jmp, 0, 0);     /* generate jmp code */
+    if (lev == 0)
+        gen(jmp, 0, 0);     /* generate jmp code */
 
     memcpy(declbegsys_t, declbegsys, sizeof declbegsys);
     if (lev == 1)
@@ -388,20 +419,21 @@ void problem(int lev, int tx, bool* fsys)
 				nxtlev[funcsym] = true;
 				test(nxtlev, fsys, 6);  // after a function should be a statement or another function
 			}
-			else{
-                fprintf(fresult, "lev=%d %s ", lev, symNames[sym]);
-                error(38);
-            }
+			else
+                error(38);  // lack '}'
         }
 
-        test(statbegsys, declbegsys_t, 7);    // test if there is a correct statement start
+        test(fsys, declbegsys_t, 7);    // test if there is a correct follow of declaration
     } while (inset(sym, declbegsys_t));   // processing until no declaration symbols
 
     /* update symbol table & fct codes */
-    code[table[tx0].adr].a = cx;
+    if (lev == 0)
+        code[table[tx0].adr].a = cx;
     table[tx0].adr = cx;
     table[tx0].size = dx;
+    #ifdef __DEBUG__
     cx0 = cx;
+    #endif
     gen(ini, 0, dx);
 
     if (tableswitch)
@@ -430,7 +462,9 @@ void problem(int lev, int tx, bool* fsys)
     gen(opr, 0, 0);
     memset(nxtlev, 0, sizeof nxtlev);
     test(fsys, nxtlev, 8);
-    // listcode(cx0);
+    #ifdef __DEBUG__
+    listcode(cx0);
+    #endif
 }
 
 /*
