@@ -34,6 +34,8 @@ char line[LEN_L+1]; 	// line buffer
 char a[LEN_ID+1];		// symbol buffer
 int line_num;           // counter for read line
 int err_num;			// counter for known errors
+int fend_tag;           // tag of read the end of file
+int lend_tag;           // tag of read the end of line
 
 TableStruct table[SIZE_TB];
 Instruction code[MAX_CX];

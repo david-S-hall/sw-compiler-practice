@@ -115,12 +115,12 @@ void error(int n)
 
 void getch()
 {
-    if (end_tag) return;
+    if (fend_tag) return;
 	if (cc == ll)
 	{
 		if (feof(fin)){
 		    ch = '$';
-		    end_tag = 1;
+		    fend_tag = 1;
 		    return;
 		}
 
@@ -280,7 +280,7 @@ void getsym()
     else if (ch == '/')
     {
         getch();
-        if (ch == '*')
+        if (ch == '*')  // block comment parsing
         {
             char a = 0, b = 0;
             getch();
@@ -294,9 +294,18 @@ void getsym()
                 if (b == '*' && a == '/')
                     break;
                 /* special judge for EOF break */
-                if (end_tag)
+                if (fend_tag)
                     break;
             }
+            getch();
+            getsym();
+            return;
+        }
+        else if (ch == '/') // line comment parsing
+        {
+            getch();
+            while (ch != 10)
+                getch();
             getch();
             getsym();
             return;

@@ -110,7 +110,7 @@ void init_errors()
 
 void init_proc()
 {
-    end_tag = 0;
+    fend_tag = 0;
 	err_num = 0;
 	line_num = 0;
 	cc = ll = cx = 0;
