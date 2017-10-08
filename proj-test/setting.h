@@ -3,9 +3,9 @@
 
 #include <stdbool.h>
 
-#define N_SYM 34		/* symbol number */
-#define N_RW 11			/* reversed words number */
-#define N_FCT 8			/* fct code number */
+#define N_SYM 35		/* symbol number */
+#define N_RW 12			/* reversed words number */
+#define N_FCT 9			/* fct code number */
 #define LEN_NUM 14		/* max length of a number */
 #define LEN_ID 16		/* max length of an identity */
 #define LEN_L 100       /* max length of a line */
@@ -24,7 +24,7 @@ typedef enum SYMBOL {
     rparen,		lbrace,		rbrace,		range,		semicolon,
     ifsym,		elsesym,	forsym,		insym,		whilesym,
     readsym,	printsym,	callsym,	varsym,		funcsym,
-    period,     autoincre,  autodecre,  returnsym,
+    period,     autoincre,  autodecre,  returnsym,  repeatsym,
 }SYMBOL;
 
 /* identity types */
@@ -37,7 +37,7 @@ typedef enum OBJECT {
 typedef enum FCT {
 	lit,	opr,	lod,
 	sto,	cal,	ini,
-	jmp,	jpc,
+	jmp,	jne,    jeq,
 }FCT;
 
 char ERR_TP[100][100];          /* error type dictionary */

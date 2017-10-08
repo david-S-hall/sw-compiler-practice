@@ -10,14 +10,16 @@ func test(){
     };
   print(a);
 }
-func some(){
-  var t;
-  var b;
-}
 call test();
 sum = 0;
 for i in 1 ...10 {
     sum = sum + 1;
-    sum = sum++;
   };
 print(sum);
+i = 1;
+repeat{
+    sum++;
+    i++;
+    print(sum);
+}while(i <= 10);
+print(i);

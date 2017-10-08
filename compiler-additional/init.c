@@ -26,9 +26,10 @@ void init_setting()
 	wsym[5] = insym;
 	wsym[6] = printsym;
 	wsym[7] = readsym;
-	wsym[8] = returnsym;
-	wsym[9] = varsym;
-    wsym[10] = whilesym;
+	wsym[8] = repeatsym;
+	wsym[9] = returnsym;
+	wsym[10] = varsym;
+    wsym[11] = whilesym;
 
 	/* reversed words dict */
 	strcpy(word[0], "call");
@@ -39,9 +40,10 @@ void init_setting()
 	strcpy(word[5], "in");
 	strcpy(word[6], "print");
 	strcpy(word[7], "read");
-	strcpy(word[8], "return");
-	strcpy(word[9], "var");
-	strcpy(word[10], "while");
+	strcpy(word[8], "repeat");
+	strcpy(word[9], "return");
+	strcpy(word[10], "var");
+	strcpy(word[11], "while");
 
 	/* fct code dict */
 	strcpy(mnemonic[lit], "lit");
@@ -51,7 +53,8 @@ void init_setting()
 	strcpy(mnemonic[cal], "cal");
 	strcpy(mnemonic[ini], "int");
 	strcpy(mnemonic[jmp], "jmp");
-	strcpy(mnemonic[jpc], "jpc");
+	strcpy(mnemonic[jne], "jne");
+	strcpy(mnemonic[jeq], "jeq");
 
 	/* start sets setting */
 	declbegsys[varsym] = true;
@@ -66,6 +69,7 @@ void init_setting()
 	statbegsys[callsym] = true;
 	statbegsys[autoincre] = true;
 	statbegsys[autodecre] = true;
+	statbegsys[repeatsym] = true;
 
 	facbegsys[ident] = true;
 	facbegsys[number] = true;
@@ -104,6 +108,7 @@ void init_errors()
     strcpy(ERR_TP[42], "a for statement needs a range symbol '...'");
     strcpy(ERR_TP[43], "no variable to use for auto-increment statement");
     strcpy(ERR_TP[44], "no variable to use for auto-decrement statement");
+    strcpy(ERR_TP[45], "a while symbol is need for repeat statement");
     strcpy(ERR_TP[60], "program is too long --end");
     strcpy(ERR_TP[61], "Displacement address is too big --end");
 }
