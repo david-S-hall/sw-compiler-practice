@@ -14,5 +14,6 @@
 21 sum = 0;
 23 for i in 1 ...10 {
 29     sum = sum + 1;
-33   };
-38 print(sum);
+33     sum = sum++;
+39   };
+44 print(sum);
