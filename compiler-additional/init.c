@@ -9,6 +9,7 @@ void init_setting()
     ssym['-'] = minus;
     ssym['*'] = times;
     ssym['/'] = slash;
+    ssym['%'] = mod;
 	ssym['('] = lparen;
 	ssym[')'] = rparen;
 	ssym['{'] = lbrace;
@@ -16,6 +17,7 @@ void init_setting()
 	ssym['='] = becomes;
 	ssym[';'] = semicolon;
 	ssym['$'] = period;
+	ssym['!'] = notsym;
 
 	/* reversed word symbol */
 	wsym[0] = callsym;
@@ -55,6 +57,8 @@ void init_setting()
 	strcpy(mnemonic[jmp], "jmp");
 	strcpy(mnemonic[jne], "jne");
 	strcpy(mnemonic[jeq], "jeq");
+	strcpy(mnemonic[jeq], "in");
+	strcpy(mnemonic[jeq], "out");
 
 	/* start sets setting */
 	declbegsys[varsym] = true;

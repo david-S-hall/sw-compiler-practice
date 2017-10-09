@@ -3,9 +3,9 @@
 
 #include <stdbool.h>
 
-#define N_SYM 35		/* symbol number */
+#define N_SYM 44		/* symbol number */
 #define N_RW 12			/* reversed words number */
-#define N_FCT 9			/* fct code number */
+#define N_FCT 11		/* fct code number */
 #define LEN_NUM 14		/* max length of a number */
 #define LEN_ID 16		/* max length of an identity */
 #define LEN_L 100       /* max length of a line */
@@ -19,12 +19,14 @@
 /* symbols dict */
 typedef enum SYMBOL {
     nul,		ident,		number, 	plus,		minus,
-    times,		slash,		becomes,	eql,		neq,
-    lss,		leq,		gtr,		geq,		lparen,
-    rparen,		lbrace,		rbrace,		range,		semicolon,
-    ifsym,		elsesym,	forsym,		insym,		whilesym,
-    readsym,	printsym,	callsym,	varsym,		funcsym,
-    period,     autoincre,  autodecre,  returnsym,  repeatsym,
+    times,		slash,		mod,        plusbe,     minusbe,
+    timesbe,    slashbe,    modbe,      becomes,	eql,
+    neq,        lss,		leq,		gtr,		geq,
+    lparen,     rparen,		lbrace,		rbrace,		range,
+    semicolon,  ifsym,		elsesym,	forsym,		insym,
+    whilesym,   readsym,	printsym,	callsym,	varsym,
+    funcsym,    period,     autoincre,  autodecre,  returnsym,
+    repeatsym,  andsym,     orsym,      notsym,
 }SYMBOL;
 
 /* identity types */
@@ -38,6 +40,7 @@ typedef enum FCT {
 	lit,	opr,	lod,
 	sto,	cal,	ini,
 	jmp,	jne,    jeq,
+    in,     out,
 }FCT;
 
 char ERR_TP[100][100];          /* error type dictionary */

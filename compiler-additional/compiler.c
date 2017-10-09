@@ -4,16 +4,22 @@
 
 #undef __DEBUG__
 
+#ifdef __DEBUG__
+
 char symNames[N_SYM][15] =
 {
     "null", "identity", "number", "plus", "minus",
-    "times", "slash", "becomes", "eql", "neq",
-    "lss", "leq", "gtr", "geq", "lparen",
+    "times", "slash", "mod", "plusbe", "minusbe",
+    "timesbe", "slashbe", "modbe", "becomes", "eql",
+    "neq", "lss", "leq", "gtr", "geq", "lparen",
     "rparen", "lbrace", "rbrace", "range", "semicolon",
     "ifsym", "elsesym", "forsym", "insym", "whilesym",
     "readsym", "printsym", "callsym", "varsym", "funcsym",
-    "period", "autoincre", "autodecre", "repeatsym"
+    "period", "autoincre", "autodecre", "returnsym", "repeatsym",
+     "andsym", "orsym", "notsym"
 };
+
+#endif
 
 void init()
 {
@@ -228,6 +234,11 @@ void getsym()
             sym = autoincre;
             getch();
         }
+        else if(ch == '=')
+        {
+            sym = plusbe;
+            getch();
+        }
         else
             sym = plus;
     }
@@ -239,8 +250,24 @@ void getsym()
             sym = autodecre;
             getch();
         }
+        else if (ch == '=')
+        {
+            sym = minusbe;
+            getch();
+        }
         else
             sym = minus;
+    }
+    else if (ch == '*')
+    {
+        getch();
+        if (ch == '=')
+        {
+            sym = timesbe;
+            getch();
+        }
+        else
+            sym = times;
     }
     else if (ch == '/')
     {
@@ -279,8 +306,24 @@ void getsym()
             getsym();
             return;
         }
+        else if (ch == '=')
+        {
+            sym = slashbe;
+            getch();
+        }
         else
             sym = slash;
+    }
+    else if (ch == '%')
+    {
+        getch();
+        if (ch == '=')
+        {
+            sym = modbe;
+            getch();
+        }
+        else
+            sym = mod;
     }
     else	// other single-char-type symbols
     {
@@ -483,12 +526,39 @@ void statement(bool* fsys, int* ptx, int lev)
                 else
                 {
                     getsym();
-                    if(sym == becomes)
+                    if (sym == becomes || sym == plusbe || sym == minusbe ||
+                        sym == timesbe || sym == slashbe || sym == modbe)
                     {
+                        int assop = sym;
                         getsym();
+
+                        if (assop != becomes)
+                            gen(lod, lev-table[i].level, table[i].adr);
                         /* expression parsing */
                         memcpy(nxtlev, fsys, sizeof nxtlev);
                         expression(nxtlev, ptx, lev);
+
+                        switch (assop)
+                        {
+                            case becomes: break;
+                            case plusbe:
+                                gen(opr, 0, 2);
+                                break;
+                            case minusbe:
+                                gen(opr, 0, 3);
+                                break;
+                            case timesbe:
+                                gen(opr, 0, 4);
+                                break;
+                            case slashbe:
+                                gen(opr, 0, 5);
+                                break;
+                            case modbe:
+                                gen(opr, 1, 5);
+                                break;
+                            default: break;
+                        }
+
                         gen(sto, lev-table[i].level, table[i].adr);
                     }
                     else if (sym == autoincre || sym == autodecre)
@@ -555,7 +625,7 @@ void statement(bool* fsys, int* ptx, int lev)
                 if (i == 0) error(35);  // identity in read() still not declared
                 else
                 {
-                    gen(opr, 0, 16);    // generate input instruction
+                    gen(in, 0, 0);    // generate input instruction
                     gen(sto, lev-table[i].level, table[i].adr); // send stack top into variable
                 }
                 getsym();
@@ -587,8 +657,7 @@ void statement(bool* fsys, int* ptx, int lev)
                     memcpy(nxtlev, fsys, sizeof nxtlev);
                     nxtlev[rparen] = true;
                     expression(nxtlev, ptx, lev);
-                    gen(opr, 0, 14);    // generate output instruction
-                    gen(opr, 0, 15);    // generate line instruction
+                    gen(out, 0, 0);    // generate output instruction
                 }
             }
             if (sym != rparen)
@@ -888,18 +957,29 @@ void term(bool* fsys, int* ptx, int lev)
     memcpy(nxtlev, fsys, sizeof nxtlev);
     nxtlev[times] = true;
     nxtlev[slash] = true;
+    nxtlev[mod] = true;
     factor(nxtlev, ptx, lev);
 
-    while (sym == times || sym == slash)
+    while (sym == times || sym == slash || sym == mod)
     {
         mulop = sym;
         getsym();
         /* factor parsing */
         factor(nxtlev, ptx, lev);
 
-        if(mulop == times)      // generate times instruction
-            gen(opr, 0, 4);
-        else gen(opr, 0, 5);    // generate slash instruction
+        switch(mulop)
+        {
+            case times:     // generate times instruction
+                gen(opr, 0, 4);
+                break;
+            case slash:     // generate slash instruction
+                gen(opr, 0, 5);
+                break;
+            case mod:       // generate mod instruction
+                gen(opr, 1, 5);
+                break;
+            default: break;
+        }
     }
 }
 

@@ -148,9 +148,16 @@ void interpret()
                         t = t - 1;
                         s[t] = s[t] * s[t + 1];
                         break;
-                    case 5: /* stack second slash top */
+                    case 5: /* stack second slash or mod top */
                         t = t - 1;
-                        s[t] = s[t] / s[t + 1];
+                        if (i.l == 0)
+                        {
+	                        s[t] = s[t] / s[t + 1];
+                        }
+                        else if (i.l == 1)
+                        {
+                        	s[t] = s[t] % s[t + 1];
+                        }
                         break;
                     case 6: /* odd judgement of stack top */
                         s[t] = s[t] & 1;
@@ -227,6 +234,17 @@ void interpret()
                     p = i.a;
                 t = t - 1;
                 break;
+            case in:	/* read an input into stack top */
+                t = t + 1;
+                printf("Enter the variable:\n");
+                scanf("%d", &(s[t]));
+                //fprintf(fresult, "%d\n", s[t]);
+                break;
+            case out:	/* output stack top */
+                printf("%d\n", s[t]);
+                fprintf(fresult, "%d", s[t]);
+				t = t - 1;
+				break;
         }
     } while (p != 0);
 }

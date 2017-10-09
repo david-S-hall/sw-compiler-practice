@@ -24,7 +24,7 @@ typedef struct Instruction
 
 /* global variables for compiler */
 
-unsigned char ch;				// store loaded character for getch
+unsigned char ch;		// store loaded character for getch
 SYMBOL sym;		        // current symbol
 char id[LEN_ID+1];		// current identity
 int num;				// current number
