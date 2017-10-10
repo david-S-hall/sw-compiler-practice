@@ -8,13 +8,13 @@
 
 char symNames[N_SYM][15] =
 {
-    "null", "identity", "number", "plus", "minus",
-    "times", "slash", "mod", "plusbe", "minusbe",
-    "timesbe", "slashbe", "modbe", "becomes", "eql",
-    "neq", "lss", "leq", "gtr", "geq", "lparen",
-    "rparen", "lbrace", "rbrace", "range", "semicolon",
-    "ifsym", "elsesym", "forsym", "insym", "whilesym",
-    "readsym", "printsym", "callsym", "varsym", "funcsym",
+    "null",     "identity", "number",   "plus",     "minus",
+    "times",    "slash",    "mod",      "plusbe",   "minusbe",
+    "timesbe",  "slashbe",  "modbe",    "becomes",  "eql",
+    "neq",      "lss",      "leq",      "gtr",      "geq",
+    "lparen",   "rparen",   "lbrace",   "rbrace",   "range",
+    "semicolon","ifsym",    "elsesym",  "forsym",   "insym",
+    "whilesym", "readsym", "printsym", "callsym", "varsym", "funcsym",
     "period", "autoincre", "autodecre", "returnsym", "repeatsym",
      "andsym", "orsym", "notsym"
 };
@@ -212,6 +212,11 @@ void getsym()
             sym = geq;
             getch();
         }
+        else if (ch == '>')
+        {
+            sym = shr;
+            getch();
+        }
         else
             sym = gtr;
     }
@@ -221,6 +226,11 @@ void getsym()
         if (ch == '=')
         {
             sym = leq;
+            getch();
+        }
+        else if (ch == '<')
+        {
+            sym = shl;
             getch();
         }
         else
@@ -334,7 +344,7 @@ void getsym()
             getch();
         }
         else
-            sym = nul;
+            sym = bitand;
     }
     else if (ch == '|')
     {
@@ -345,7 +355,7 @@ void getsym()
             getch();
         }
         else
-            sym = nul;
+            sym = bitor;
     }
     else	// other single-char-type symbols
     {
@@ -807,7 +817,7 @@ void statement(bool* fsys, int* ptx, int lev)
     	    			forstatrange(fsys, ptx, lev);
 
     	    			/* condition judgement of 'for' range */
-    	    			gen(opr, 0, 13);
+    	    			gen(opr, 1, 8);
     	    			/* out-of-range conditional jump */
     	    			cx2 = cx;
     	    			gen(jne, 0, 0);
@@ -904,16 +914,73 @@ void cond_and(bool* fsys, int* ptx, int lev)
 
     memcpy(nxtlev, fsys, sizeof nxtlev);
     nxtlev[andsym] = true;
-    equal_expr(nxtlev, ptx, lev);
+    or_expr(nxtlev, ptx, lev);
 
     while (sym == andsym)
     {
         getsym();
-        equal_expr(fsys, ptx, lev);
+        or_expr(fsys, ptx, lev);
         gen(opr, 0, 14);    // logic and operation
     }
 
     test(fsys, nxtlev, 47);
+}
+
+/*
+ * bitwise or processing
+ */
+void or_expr(bool* fsys, int* ptx, int lev)
+{
+    bool nxtlev[N_SYM];
+
+    memcpy(nxtlev, fsys, sizeof nxtlev);
+    nxtlev[bitor] = true;
+    xor_expr(nxtlev, ptx, lev);
+
+    while (sym == bitor)
+    {
+        getsym();
+        xor_expr(fsys, ptx, lev);
+        gen(opr, 0, 11);    // bitwise or operation
+    }
+}
+
+/*
+ * bitwise xor processing
+ */
+void xor_expr(bool* fsys, int* ptx, int lev)
+{
+    bool nxtlev[N_SYM];
+
+    memcpy(nxtlev, fsys, sizeof nxtlev);
+    nxtlev[xor] = true;
+    and_expr(nxtlev, ptx, lev);
+
+    while (sym == xor)
+    {
+        getsym();
+        and_expr(fsys, ptx, lev);
+        gen(opr, 0, 13);    // bitwise xor operation
+    }
+}
+
+/*
+ * bitwise and processing
+ */
+void and_expr(bool* fsys, int* ptx, int lev)
+{
+    bool nxtlev[N_SYM];
+
+    memcpy(nxtlev, fsys, sizeof nxtlev);
+    nxtlev[bitand] = true;
+    equal_expr(nxtlev, ptx, lev);
+
+    while (sym == bitand)
+    {
+        getsym();
+        equal_expr(fsys, ptx, lev);
+        gen(opr, 0, 10);    // bitwise and operation
+    }
 }
 
 /*
@@ -936,11 +1003,11 @@ void equal_expr(bool* fsys, int* ptx, int lev)
         rel_expr(nxtlev, ptx, lev);
         switch(eqlop)
         {
-            case eql:
-                gen(opr, 0, 8);
+            case eql:   // equal judgement
+                gen(opr, 0, 7);
                 break;
-            case neq:
-                gen(opr, 0, 9);
+            case neq:   // not equal judgement
+                gen(opr, 1, 7);
                 break;
             default: break;
         }
@@ -961,31 +1028,62 @@ void rel_expr(bool* fsys, int* ptx, int lev)
     nxtlev[leq] = true;
     nxtlev[gtr] = true;
     nxtlev[geq] = true;
-    add_expr(nxtlev, ptx, lev);
+    shift_expr(nxtlev, ptx, lev);
 
     while (sym == lss || sym == leq || sym == gtr || sym == geq)
     {
         relop = sym;
         getsym();
-        add_expr(nxtlev, ptx, lev);
+        shift_expr(nxtlev, ptx, lev);
         switch(relop)
         {
             case lss:
-                gen(opr, 0, 10);
-                break;
-            case geq:
-                gen(opr, 0, 11);
-                break;
-            case gtr:
-                gen(opr, 0, 12);
+                gen(opr, 0, 8);
                 break;
             case leq:
-                gen(opr, 0, 13);
+                gen(opr, 1, 8);
+                break;
+            case gtr:
+                gen(opr, 0, 9);
+                break;
+            case geq:
+                gen(opr, 1, 9);
                 break;
             default: break;
         }
     }
     test(fsys, nxtlev, 47);
+}
+
+/*
+ * bitshift expression processing
+ */
+void shift_expr(bool* fsys, int* ptx, int lev)
+{
+    SYMBOL eqlop;
+    bool nxtlev[N_SYM];
+
+    memcpy(nxtlev, fsys, sizeof nxtlev);
+    nxtlev[shl] = true;
+    nxtlev[shr] = true;
+    add_expr(nxtlev, ptx, lev);
+
+    while (sym == shl || sym == shr)
+    {
+        eqlop = sym;
+        getsym();
+        add_expr(nxtlev, ptx, lev);
+        switch(eqlop)
+        {
+            case shl:   // left shift
+                gen(opr, 0, 16);
+                break;
+            case shr:   // right shift
+                gen(opr, 1, 16);
+                break;
+            default: break;
+        }
+    }
 }
 
 /*
@@ -1079,7 +1177,7 @@ void factor(bool* fsys, int* ptx, int lev)
             getsym();
             factor(fsys, ptx, lev);
             gen(lit, 0, 0);
-            gen(opr, 0, 8);
+            gen(opr, 0, 7);
         }
         /* the factor is a identity type */
         else if (sym == ident)

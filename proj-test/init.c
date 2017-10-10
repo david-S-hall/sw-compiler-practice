@@ -10,6 +10,11 @@ void init_setting()
     ssym['*'] = times;
     ssym['/'] = slash;
     ssym['%'] = mod;
+    ssym['&'] = bitand;
+    ssym['|'] = bitor;
+    ssym['~'] = bitnot;
+    ssym['^'] = xor;
+    ssym['!'] = notsym;
 	ssym['('] = lparen;
 	ssym[')'] = rparen;
 	ssym['{'] = lbrace;
@@ -17,7 +22,6 @@ void init_setting()
 	ssym['='] = becomes;
 	ssym[';'] = semicolon;
 	ssym['$'] = period;
-	ssym['!'] = notsym;
 
 	/* reversed word symbol */
 	wsym[0] = callsym;

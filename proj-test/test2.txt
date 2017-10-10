@@ -23,6 +23,7 @@ repeat{
     print(sum+2);
 }while(i <= 10);
 i = -1;
-if 2<1 && (1<2 || 2>1) {
-   print(!++i);
+if 2<1 && 1<2 || 2>1 {
+   print(!++i<<2);
 };
+print(5&7);

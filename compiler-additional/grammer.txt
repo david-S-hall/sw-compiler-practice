@@ -19,9 +19,13 @@ repeat_stat = "repeat" "{" stat_list "}" "while" "(" expr ")".
 
 expr = cond_or.
 cond_or = cond_and {"||" cond_and}.
-cond_and = equal_expr {"&&" equal_expr}.
+cond_and = or_expr {"&&" or_expr}.
+or_expr = xor_expr {"|" xor_expr}.
+xor_expr = and_expr {"^" and_expr}.
+and_expr = equal_expr {"&" equal_expr}.
 equal_expr = rel_expr {("==" | "!=") rel_expr}.
-rel_expr = add_expr {("<" | ">" | "<=" | ">=") add_expr}.
+rel_expr = shift_expr {("<" | ">" | "<=" | ">=") shift_expr}.
+shift_expr = add_expr {("<<" | ">>") add_expr}.
 add_expr = ["+" | "-"] term {("+" | "-") term}.
 term = factor {("*" | "/" | "%") factor} | .
-factor = ("++" | "--") ident | ident ["++" | "--"] | number | "(" expr ")" | "!" factor.
+factor = ("++" | "--") ident | ident ["++" | "--"] | number | "(" expr ")" | ("~" | "!") factor.
