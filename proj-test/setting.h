@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#define N_SYM 50		/* symbol number */
+#define N_SYM 55		/* symbol number */
 #define N_RW 12			/* reversed words number */
 #define N_FCT 11		/* fct code number */
 #define LEN_NUM 14		/* max length of a number */
@@ -27,7 +27,8 @@ typedef enum SYMBOL {
     whilesym,   readsym,	printsym,	callsym,	varsym,
     funcsym,    period,     autoincre,  autodecre,  returnsym,
     repeatsym,  andsym,     orsym,      notsym,     xor,
-    bitand,     bitor,      bitnot,     shl,        shr
+    bitand,     bitor,      bitnot,     shl,        shr,
+    andbe,      orbe,       xorbe,      shlbe,      shrbe,
 }SYMBOL;
 
 /* identity types */

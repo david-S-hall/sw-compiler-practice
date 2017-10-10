@@ -214,8 +214,14 @@ void getsym()
         }
         else if (ch == '>')
         {
-            sym = shr;
             getch();
+            if (ch == '=')
+            {
+                sym = shrbe;
+                getch();
+            }
+            else
+                sym = shr;
         }
         else
             sym = gtr;
@@ -230,8 +236,14 @@ void getsym()
         }
         else if (ch == '<')
         {
-            sym = shl;
             getch();
+            if (ch == '=')
+            {
+                sym = shlbe;
+                getch();
+            }
+            else
+                sym = shl;
         }
         else
             sym = lss;
@@ -343,6 +355,11 @@ void getsym()
             sym = andsym;
             getch();
         }
+        else if (ch == '=')
+        {
+            sym = andbe;
+            getch();
+        }
         else
             sym = bitand;
     }
@@ -354,8 +371,24 @@ void getsym()
             sym = orsym;
             getch();
         }
+        else if (ch == '=')
+        {
+            sym = orbe;
+            getch();
+        }
         else
             sym = bitor;
+    }
+    else if (ch == '^')
+    {
+        getch();
+        if (ch == '=')
+        {
+            sym = xorbe;
+            getch();
+        }
+        else 
+            sym = xor;
     }
     else	// other single-char-type symbols
     {
@@ -559,7 +592,8 @@ void statement(bool* fsys, int* ptx, int lev)
                 {
                     getsym();
                     if (sym == becomes || sym == plusbe || sym == minusbe ||
-                        sym == timesbe || sym == slashbe || sym == modbe)
+                        sym == timesbe || sym == slashbe || sym == modbe ||
+                        sym == andbe || sym == orbe || sym == xorbe || sym == shlbe || sym == shrbe)
                     {
                         int assop = sym;
                         getsym();
@@ -587,6 +621,21 @@ void statement(bool* fsys, int* ptx, int lev)
                                 break;
                             case modbe:
                                 gen(opr, 1, 5);
+                                break;
+                            case andbe:
+                                gen(opr, 0, 10);
+                                break;
+                            case orbe:
+                                gen(opr, 0, 11);
+                                break;
+                            case xorbe:
+                                gen(opr, 0, 13);
+                                break;
+                            case shlbe:
+                                gen(opr, 0, 16);
+                                break;
+                            case shrbe:
+                                gen(opr, 1, 16);
                                 break;
                             default: break;
                         }
