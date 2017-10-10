@@ -80,6 +80,7 @@ void init_setting()
 	facbegsys[lparen] = true;
 	facbegsys[autoincre] = true;
 	facbegsys[autodecre] = true;
+	facbegsys[notsym] = true;
 }
 
 void init_errors()
@@ -102,7 +103,6 @@ void init_errors()
     strcpy(ERR_TP[31], "number is out-of-range");
     strcpy(ERR_TP[33], "invalid statement for lacking a token ')'");
     strcpy(ERR_TP[34], "invalid statement for lacking a token '('");
-    strcpy(ERR_TP[35], "invalid identity without declaration");
     strcpy(ERR_TP[36], "function needs '()' token");
     strcpy(ERR_TP[37], "statement needs start after '{' token");
     strcpy(ERR_TP[38], "statement needs ending with '}' token");
@@ -113,6 +113,8 @@ void init_errors()
     strcpy(ERR_TP[43], "no variable to use for auto-increment statement");
     strcpy(ERR_TP[44], "no variable to use for auto-decrement statement");
     strcpy(ERR_TP[45], "a while symbol is need for repeat statement");
+    strcpy(ERR_TP[46], "a wrong follow symbol for logic or judgement");
+    strcpy(ERR_TP[47], "a wrong follow symbol for logic and judgement");
     strcpy(ERR_TP[60], "program is too long --end");
     strcpy(ERR_TP[61], "Displacement address is too big --end");
 }

@@ -22,4 +22,7 @@ repeat{
     i++;
     print(sum+2);
 }while(i <= 10);
-print(i%3);
+i = -1;
+if 2<1 && 1<2 || 2>1 {
+   print(!++i);
+};

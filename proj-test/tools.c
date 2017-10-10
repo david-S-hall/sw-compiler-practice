@@ -186,14 +186,13 @@ void interpret()
                         t = t - 1;
                         s[t] = (s[t] <= s[t + 1]);
                         break;
-                    case 14:/* output stack top */
-                        printf("%d", s[t]);
-                        fprintf(fresult, "%d", s[t]);
+                    case 14:/* logic and */
                         t = t - 1;
+                        s[t] = (s[t] && s[t + 1]);
                         break;
-                    case 15:/* output line break */
-                        puts("");
-                        fprintf(fresult, "\n");
+                    case 15:/* logic or */
+                        t = t - 1;
+                        s[t] = (s[t] || s[t + 1]);
                         break;
                     case 16:/* read an input into stack top */
                         t = t + 1;

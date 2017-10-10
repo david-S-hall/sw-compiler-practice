@@ -75,6 +75,9 @@ void listall();
 void problem(int lev, int tx, bool* fsys);
 void declaration(enum OBJECT tp, int* ptx, int lev, int* pdx);
 void statement(bool* fsys, int* ptx, int lev);
+#define logic(fsys, ptx, lev) 	logic_or(fsys, ptx, lev)
+void logic_and(bool* fsys, int* ptx, int lev);
+void logic_or(bool* fsys, int* ptx, int lev);
 void condition(bool* fsys, int* ptx, int lev);
 void expression(bool* fsys, int* ptx, int lev);
 void term(bool* fsys, int* ptx, int lev);

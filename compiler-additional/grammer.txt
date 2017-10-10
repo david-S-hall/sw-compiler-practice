@@ -1,0 +1,30 @@
+problem = decl_list stat_list.
+
+decl_list = var_decl_list func_decl_list.
+var_decl_list = {var_decl ";"}.
+var_decl = "var" ident.
+func_decl_list = {"func" ident "(" ")" "{" func_body "}"}.
+func_body = var_decl_list stat_list.
+
+stat_list = {stat ";"}.
+stat = if_stat | while_stat | read_stat | print_stat | assign_stat | for_stat | call_stat | repeat_stat.
+if_stat = "if" condition "{" stat_list "}" ["else" "{" stat_list "}"].
+while_stat = "while" condition "{" stat_list "}".
+read_stat = "read" "(" expr ")".
+print_stat = "print" "(" ident ")".
+assign_stat = ident ("=" | "+=" | "-=" | "*=" | "/=" | "%=") expr.
+for_stat = "for" ident "in" (ident | number) "..." (ident | number) "{" stat_list "}".
+call_stat = "call" ident "(" ")".
+repeat_stat = "repeat" "{" stat_list "}" "while" "(" condition ")".
+
+expr = condition.
+condition = cond_or.
+cond_or = cond_and {"||" cond_and}.
+cond_and = equal_expr {"&&" equal_expr.
+equal_expr = rel_expr {("==" | "!=") rel_expr}.
+
+
+condition = expr ("==" | "!=" | "<" | "<=" | ">" | ">=") expr.
+expr = ["+" | "-"] term {("+" | "-") term}.
+term = factor {("*" | "/" | "%") factor} | .
+factor = ident | number | "(" expr ")" | "!" factor.

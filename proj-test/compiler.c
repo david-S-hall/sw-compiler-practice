@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include "compiler.h"
 
-#undef __DEBUG__
+#define __DEBUG__
 
 #ifdef __DEBUG__
 
@@ -81,7 +81,7 @@ void error(int n)
         return;
     }
 
-    fprintf(ferr, "# line %d: %s\n", line_num, ERR_TP[n]);
+    fprintf(ferr, "# line %d, type %d: %s\n", line_num, n, ERR_TP[n]);
 }
 
 void getch()
@@ -202,7 +202,7 @@ void getsym()
             getch();
         }
         else
-            sym = nul;
+            sym = notsym;
     }
     else if (ch == '>') // test symbol '>=' or '>'
     {
@@ -324,6 +324,28 @@ void getsym()
         }
         else
             sym = mod;
+    }
+    else if (ch == '&')
+    {
+        getch();
+        if (ch == '&')
+        {
+            sym = andsym;
+            getch();
+        }
+        else
+            sym = nul;
+    }
+    else if (ch == '|')
+    {
+        getch();
+        if (ch == '|')
+        {
+            sym = orsym;
+            getch();
+        }
+        else
+            sym = nul;
     }
     else	// other single-char-type symbols
     {
@@ -647,18 +669,10 @@ void statement(bool* fsys, int* ptx, int lev)
             else
             {
                 getsym();
-                if (sym == ident)
-                    i = position(id, *ptx);
-                else i = 0;
-
-                if (i == 0) error(35);  // identity in print() still not declared
-                else
-                {
-                    memcpy(nxtlev, fsys, sizeof nxtlev);
-                    nxtlev[rparen] = true;
-                    expression(nxtlev, ptx, lev);
-                    gen(out, 0, 0);    // generate output instruction
-                }
+                memcpy(nxtlev, fsys, sizeof nxtlev);
+                nxtlev[rparen] = true;
+                expression(nxtlev, ptx, lev);
+                gen(out, 0, 0);    // generate output instruction
             }
             if (sym != rparen)
             {
@@ -700,7 +714,7 @@ void statement(bool* fsys, int* ptx, int lev)
             getsym();
             memcpy(nxtlev, fsys, sizeof nxtlev);
             nxtlev[lbrace] = true;
-            condition(nxtlev, ptx, lev);
+            logic(nxtlev, ptx, lev);
 
             if (sym == lbrace) getsym();
             else error(37); // a token '{' after condition
@@ -744,7 +758,7 @@ void statement(bool* fsys, int* ptx, int lev)
             getsym();
             memcpy(nxtlev, fsys, sizeof nxtlev);
             nxtlev[lbrace] = true;
-            condition(nxtlev, ptx, lev);
+            logic(nxtlev, ptx, lev);
             cx2 = cx;
             gen(jne, 0, 0);
 
@@ -845,7 +859,7 @@ void statement(bool* fsys, int* ptx, int lev)
 
             memcpy(nxtlev, fsys, sizeof nxtlev);
             nxtlev[rparen] = true;
-            condition(nxtlev, ptx, lev);
+            logic(nxtlev, ptx, lev);
             gen(jeq, 0, cx1);
 
             if (sym == rparen) getsym();
@@ -858,6 +872,61 @@ void statement(bool* fsys, int* ptx, int lev)
 
     memset(nxtlev, 0, sizeof nxtlev);
     test(fsys, nxtlev, 19); // follow a wrong symbol
+}
+
+/*
+ * logic and processing
+ */
+void logic_and(bool* fsys, int* ptx, int lev)
+{
+    bool nxtlev[N_SYM];
+
+    memcpy(nxtlev, fsys, sizeof nxtlev);
+    nxtlev[andsym] = true;
+    condition(nxtlev, ptx, lev);
+
+    while (sym == andsym)
+    {
+        getsym();
+        logic_or(fsys, ptx, lev);
+        gen(opr, 0, 14);    // logic and operation
+    }
+
+    test(fsys, nxtlev, 47);
+}
+
+/*
+ * logic or processing
+ */
+void logic_or(bool* fsys, int* ptx, int lev)
+{
+    bool nxtlev[N_SYM];
+
+    memcpy(nxtlev, fsys, sizeof nxtlev);
+
+    if (sym == lparen)
+    {
+        getsym();
+        nxtlev[rparen] = true;
+        logic_or(nxtlev, ptx, lev);
+
+        if (sym == rparen) getsym();
+        else error(33); // lack ')'
+    }
+    else
+    {
+        nxtlev[orsym] = true;
+        logic_and(nxtlev, ptx, lev);
+
+        while (sym == orsym)
+        {
+            getsym();
+            logic_or(nxtlev, ptx, lev);
+            gen(opr, 0, 15);    // logic or operation
+        }
+
+        test(fsys, nxtlev, 46);
+    }
 }
 
 /*
@@ -994,8 +1063,16 @@ void factor(bool* fsys, int* ptx, int lev)
     test(facbegsys, fsys, 24);
     while (inset(sym, facbegsys))
     {
+        /* unary operation nesting */
+        if (sym == notsym)
+        {
+            getsym();
+            factor(fsys, ptx, lev);
+            gen(lit, 0, 0);
+            gen(opr, 0, 8);
+        }
         /* the factor is a identity type */
-        if (sym == ident)
+        else if (sym == ident)
         {
             i = position(id, *ptx);
             if (i == 0) error(11);  // a no-declaration identity
