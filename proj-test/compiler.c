@@ -714,7 +714,7 @@ void statement(bool* fsys, int* ptx, int lev)
             getsym();
             memcpy(nxtlev, fsys, sizeof nxtlev);
             nxtlev[lbrace] = true;
-            logic(nxtlev, ptx, lev);
+            expression(nxtlev, ptx, lev);
 
             if (sym == lbrace) getsym();
             else error(37); // a token '{' after condition
@@ -758,7 +758,7 @@ void statement(bool* fsys, int* ptx, int lev)
             getsym();
             memcpy(nxtlev, fsys, sizeof nxtlev);
             nxtlev[lbrace] = true;
-            logic(nxtlev, ptx, lev);
+            expression(nxtlev, ptx, lev);
             cx2 = cx;
             gen(jne, 0, 0);
 
@@ -859,7 +859,7 @@ void statement(bool* fsys, int* ptx, int lev)
 
             memcpy(nxtlev, fsys, sizeof nxtlev);
             nxtlev[rparen] = true;
-            logic(nxtlev, ptx, lev);
+            expression(nxtlev, ptx, lev);
             gen(jeq, 0, cx1);
 
             if (sym == rparen) getsym();
@@ -875,20 +875,41 @@ void statement(bool* fsys, int* ptx, int lev)
 }
 
 /*
+ * logic or processing
+ */
+void cond_or(bool* fsys, int* ptx, int lev)
+{
+    bool nxtlev[N_SYM];
+
+    memcpy(nxtlev, fsys, sizeof nxtlev);
+    nxtlev[orsym] = true;
+    cond_and(nxtlev, ptx, lev);
+
+    while (sym == orsym)
+    {
+        getsym();
+        cond_and(nxtlev, ptx, lev);
+        gen(opr, 0, 15);    // logic or operation
+    }
+
+    test(fsys, nxtlev, 46);
+}
+
+/*
  * logic and processing
  */
-void logic_and(bool* fsys, int* ptx, int lev)
+void cond_and(bool* fsys, int* ptx, int lev)
 {
     bool nxtlev[N_SYM];
 
     memcpy(nxtlev, fsys, sizeof nxtlev);
     nxtlev[andsym] = true;
-    condition(nxtlev, ptx, lev);
+    equal_expr(nxtlev, ptx, lev);
 
     while (sym == andsym)
     {
         getsym();
-        logic_or(fsys, ptx, lev);
+        equal_expr(fsys, ptx, lev);
         gen(opr, 0, 14);    // logic and operation
     }
 
@@ -896,63 +917,24 @@ void logic_and(bool* fsys, int* ptx, int lev)
 }
 
 /*
- * logic or processing
+ * equal condition processing
  */
-void logic_or(bool* fsys, int* ptx, int lev)
+void equal_expr(bool* fsys, int* ptx, int lev)
 {
-    bool nxtlev[N_SYM];
-
-    memcpy(nxtlev, fsys, sizeof nxtlev);
-
-    if (sym == lparen)
-    {
-        getsym();
-        nxtlev[rparen] = true;
-        logic_or(nxtlev, ptx, lev);
-
-        if (sym == rparen) getsym();
-        else error(33); // lack ')'
-    }
-    else
-    {
-        nxtlev[orsym] = true;
-        logic_and(nxtlev, ptx, lev);
-
-        while (sym == orsym)
-        {
-            getsym();
-            logic_or(nxtlev, ptx, lev);
-            gen(opr, 0, 15);    // logic or operation
-        }
-
-        test(fsys, nxtlev, 46);
-    }
-}
-
-/*
- * condition processing
- */
-void condition(bool* fsys, int* ptx, int lev)
-{
-    SYMBOL relop;
+    SYMBOL eqlop;
     bool nxtlev[N_SYM];
 
     memcpy(nxtlev, fsys, sizeof nxtlev);
     nxtlev[eql] = true;
     nxtlev[neq] = true;
-    nxtlev[lss] = true;
-    nxtlev[leq] = true;
-    nxtlev[gtr] = true;
-    nxtlev[geq] = true;
-    expression(nxtlev, ptx, lev);
-    if (sym != eql && sym != neq && sym != lss && sym != leq && sym != gtr && sym != geq)
-        error(20);
-    else
+    rel_expr(nxtlev, ptx, lev);
+
+    while (sym == eql || sym == neq)
     {
-        relop = sym;
+        eqlop = sym;
         getsym();
-        expression(fsys, ptx, lev);
-        switch(relop)
+        rel_expr(nxtlev, ptx, lev);
+        switch(eqlop)
         {
             case eql:
                 gen(opr, 0, 8);
@@ -960,6 +942,34 @@ void condition(bool* fsys, int* ptx, int lev)
             case neq:
                 gen(opr, 0, 9);
                 break;
+            default: break;
+        }
+    }
+    test(fsys, nxtlev, 47);
+}
+
+/*
+ * comparation condition processing
+ */
+void rel_expr(bool* fsys, int* ptx, int lev)
+{
+    SYMBOL relop;
+    bool nxtlev[N_SYM];
+
+    memcpy(nxtlev, fsys, sizeof nxtlev);
+    nxtlev[lss] = true;
+    nxtlev[leq] = true;
+    nxtlev[gtr] = true;
+    nxtlev[geq] = true;
+    add_expr(nxtlev, ptx, lev);
+
+    while (sym == lss || sym == leq || sym == gtr || sym == geq)
+    {
+        relop = sym;
+        getsym();
+        add_expr(nxtlev, ptx, lev);
+        switch(relop)
+        {
             case lss:
                 gen(opr, 0, 10);
                 break;
@@ -972,16 +982,16 @@ void condition(bool* fsys, int* ptx, int lev)
             case leq:
                 gen(opr, 0, 13);
                 break;
-            default:
-                break;
+            default: break;
         }
     }
+    test(fsys, nxtlev, 47);
 }
 
 /*
- * expression processing
+ * addition expression processing
  */
-void expression(bool* fsys, int* ptx, int lev)
+void add_expr(bool* fsys, int* ptx, int lev)
 {
     SYMBOL addop = nul;
     bool nxtlev[N_SYM];

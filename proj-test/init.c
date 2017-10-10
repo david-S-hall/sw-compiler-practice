@@ -96,7 +96,7 @@ void init_errors()
     strcpy(ERR_TP[13], "lack of become token for assignment statement");
     strcpy(ERR_TP[14], "invalid call statement without function identity");
     strcpy(ERR_TP[19], "statement ending with a wrong follow symbol");
-    strcpy(ERR_TP[20], "a relation operator is necessary");
+    strcpy(ERR_TP[20], "a relation operator is lost");
     strcpy(ERR_TP[21], "invalid conversation for a function identity");
     strcpy(ERR_TP[24], "a wrong start token for factor");
     strcpy(ERR_TP[30], "too long for a number");
