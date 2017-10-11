@@ -178,6 +178,11 @@ void getsym()
                 sym = range;
                 getch();
             }
+            else if (ch == '<')
+            {
+                sym = halfrange;
+                getch();
+            }
             else sym = nul;
         }
         else sym = nul;
@@ -387,7 +392,7 @@ void getsym()
             sym = xorbe;
             getch();
         }
-        else 
+        else
             sym = xor;
     }
     else	// other single-char-type symbols
@@ -858,15 +863,25 @@ void statement(bool* fsys, int* ptx, int lev)
     	    			forstatrange(fsys, ptx, lev);
     	    			gen(sto, lev-table[i].level, table[i].adr);
 
-    	    			if (sym != range) error(42);	// lack '...'
-    	    			else getsym();
+    	    			int rgeop = sym;
+    	    			if (sym == range || sym == halfrange) getsym();
+    	    			else error(42);	// lack '...' or '..<'
 
     	    			cx1 = cx;
     	    			gen(lod, lev-table[i].level, table[i].adr);
     	    			forstatrange(fsys, ptx, lev);
 
     	    			/* condition judgement of 'for' range */
-    	    			gen(opr, 1, 8);
+    	    			switch(rgeop)
+    	    			{
+                            case range:
+                                gen(opr, 1, 8);
+                                break;
+                            case halfrange:
+                                gen(opr, 0, 8);
+                                break;
+                            default: break;
+    	    			}
     	    			/* out-of-range conditional jump */
     	    			cx2 = cx;
     	    			gen(jne, 0, 0);

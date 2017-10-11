@@ -150,57 +150,95 @@ void interpret()
                         break;
                     case 5: /* stack second slash or mod top */
                         t = t - 1;
-                        if (i.l == 0)
+                        switch (i.l)
                         {
-	                        s[t] = s[t] / s[t + 1];
-                        }
-                        else if (i.l == 1)
-                        {
-                        	s[t] = s[t] % s[t + 1];
+                            case 0:
+                                s[t] = s[t] / s[t + 1];
+                                break;
+                            case 1:
+                                s[t] = s[t] % s[t + 1];
+                                break;
+                            default: break;
                         }
                         break;
                     case 6: /* odd judgement of stack top */
                         s[t] = s[t] & 1;
                         break;
-                    case 8: /* stack top and second equality judgement */
+                    case 7: /* stack top and second equal or not judgement */
                         t = t - 1;
-                        s[t] = (s[t] == s[t + 1]);
+                        switch (i.l)
+                        {
+                            case 0:
+                                s[t] = (s[t] == s[t + 1]);
+                                break;
+                            case 1:
+                                s[t] = (s[t] != s[t + 1]);
+                                break;
+                            default: break;
+                        }
                         break;
-                    case 9: /* stack top and second not-equality judgement */
+                    case 8:/* stack second less than or less-or-equal to top judgement */
                         t = t - 1;
-                        s[t] = (s[t] != s[t + 1]);
+                        switch (i.l)
+                        {
+                            case 0:
+                                s[t] = (s[t] < s[t + 1]);
+                                break;
+                            case 1:
+                                s[t] = (s[t] <= s[t + 1]);
+                                break;
+                            default: break;
+                        }
                         break;
-                    case 10:/* stack second less than top judgement */
+                    case 9: /* stack second larger than or larger-or-equal to top judgement */
                         t = t - 1;
-                        s[t] = (s[t] < s[t + 1]);
+                        switch (i.l)
+                        {
+                            case 0:
+                                s[t] = (s[t] > s[t + 1]);
+                                break;
+                            case 1:
+                                s[t] = (s[t] >= s[t + 1]);
+                                break;
+                            default: break;
+                        }
                         break;
-                    case 11:/* stack second larger than or equal to top judgement */
+                    case 10:/* bitwise and */
                         t = t - 1;
-                        s[t] = (s[t] >= s[t + 1]);
+                        s[t] = s[t] & s[t + 1];
                         break;
-                    case 12:/* stack second larger than top judgement */
+                    case 11:/* bitwise or */
                         t = t - 1;
-                        s[t] = (s[t] > s[t + 1]);
+                        s[t] = s[t] | s[t + 1];
                         break;
-                    case 13:/* stack second less than or equal to top judgement */
+                    case 12:/* bitwise not */
+                        s[t] = ~s[t];
+                        break;
+                    case 13:/* xor */
                         t = t - 1;
-                        s[t] = (s[t] <= s[t + 1]);
-                        break;
-                    case 14:/* output stack top */
-                        printf("%d", s[t]);
-                        fprintf(fresult, "%d", s[t]);
+                        s[t] = s[t] ^ s[t + 1];
+                    case 14:/* logic and */
                         t = t - 1;
+                        s[t] = (s[t] && s[t + 1]);
                         break;
-                    case 15:/* output line break */
-                        puts("");
-                        fprintf(fresult, "\n");
+                    case 15:/* logic or */
+                        t = t - 1;
+                        s[t] = (s[t] || s[t + 1]);
                         break;
-                    case 16:/* read an input into stack top */
-                        t = t + 1;
-                        printf("Enter the variable:\n");
-                        scanf("%d", &(s[t]));
-                        //fprintf(fresult, "%d\n", s[t]);
+                    case 16:/* shift operation */
+                        t = t - 1;
+                        switch (i.l)
+                        {
+                            case 0:
+                                s[t] = s[t] << s[t + 1];
+                                break;
+                            case 1:
+                                s[t] = s[t] >> s[t + 1];
+                                break;
+                            default: break;
+                        }
                         break;
+                    default: break;
                 }
                 break;
             case lod:   /* push the value in memory into stack with current function base and offset address */

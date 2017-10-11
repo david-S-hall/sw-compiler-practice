@@ -12,7 +12,7 @@
 17 }
 18 call test();
 20 sum = 0;
-22 for i in 1 ...10 {
+22 for i in 1 ..<10 {
 28     sum = sum + 1;
 32   };
 37 print(sum);

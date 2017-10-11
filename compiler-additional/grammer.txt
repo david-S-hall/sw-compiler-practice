@@ -12,8 +12,8 @@ if_stat = "if" expr "{" stat_list "}" ["else" "{" stat_list "}"].
 while_stat = "while" expr "{" stat_list "}".
 read_stat = "read" "(" expr ")".
 print_stat = "print" "(" ident ")".
-assign_stat = ident ("=" | "+=" | "-=" | "*=" | "/=" | "%=") expr | ("++" | "--") ident | ident ("++" | "--").
-for_stat = "for" ident "in" (ident | number) "..." (ident | number) "{" stat_list "}".
+assign_stat = ident ("=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | "<<=" | ">>=" ) expr | ("++" | "--") ident | ident ("++" | "--").
+for_stat = "for" ident "in" (ident | number) ("..." | "..<") (ident | number) "{" stat_list "}".
 call_stat = "call" ident "(" ")".
 repeat_stat = "repeat" "{" stat_list "}" "while" "(" expr ")".
 

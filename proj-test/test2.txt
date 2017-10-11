@@ -12,7 +12,7 @@ func test(){
 }
 call test();
 sum = 0;
-for i in 1 ...10 {
+for i in 1 ..<10 {
     sum = sum + 1;
   };
 print(sum);

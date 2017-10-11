@@ -75,10 +75,19 @@ void listall();
 void problem(int lev, int tx, bool* fsys);
 void declaration(enum OBJECT tp, int* ptx, int lev, int* pdx);
 void statement(bool* fsys, int* ptx, int lev);
-void condition(bool* fsys, int* ptx, int lev);
-void expression(bool* fsys, int* ptx, int lev);
+#define expression(fsys, ptx, lev) 	cond_or(fsys, ptx, lev)
+void cond_or(bool* fsys, int* ptx, int lev);
+void cond_and(bool* fsys, int* ptx, int lev);
+void or_expr(bool* fsys, int* ptx, int lev);
+void xor_expr(bool* fsys, int* ptx, int lev);
+void and_expr(bool* fsys, int* ptx, int lev);
+void equal_expr(bool* fsys, int* ptx, int lev);
+void rel_expr(bool* fsys, int* ptx, int lev);
+void shift_expr(bool* fsys, int* ptx, int lev);
+void add_expr(bool* fsys, int* ptx, int lev);
 void term(bool* fsys, int* ptx, int lev);
 void factor(bool* fsys, int* ptx, int lev);
+
 void enter(enum OBJECT k, int* ptx, int lev, int* pdx);
 int position(char* idt, int tx);
 int base(int l, int* s, int b);

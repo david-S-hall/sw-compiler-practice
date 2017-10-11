@@ -10,6 +10,11 @@ void init_setting()
     ssym['*'] = times;
     ssym['/'] = slash;
     ssym['%'] = mod;
+    ssym['&'] = bitand;
+    ssym['|'] = bitor;
+    ssym['~'] = bitnot;
+    ssym['^'] = xor;
+    ssym['!'] = notsym;
 	ssym['('] = lparen;
 	ssym[')'] = rparen;
 	ssym['{'] = lbrace;
@@ -17,7 +22,6 @@ void init_setting()
 	ssym['='] = becomes;
 	ssym[';'] = semicolon;
 	ssym['$'] = period;
-	ssym['!'] = notsym;
 
 	/* reversed word symbol */
 	wsym[0] = callsym;
@@ -80,6 +84,7 @@ void init_setting()
 	facbegsys[lparen] = true;
 	facbegsys[autoincre] = true;
 	facbegsys[autodecre] = true;
+	facbegsys[notsym] = true;
 }
 
 void init_errors()
@@ -95,14 +100,13 @@ void init_errors()
     strcpy(ERR_TP[13], "lack of become token for assignment statement");
     strcpy(ERR_TP[14], "invalid call statement without function identity");
     strcpy(ERR_TP[19], "statement ending with a wrong follow symbol");
-    strcpy(ERR_TP[20], "a relation operator is necessary");
+    strcpy(ERR_TP[20], "a relation operator is lost");
     strcpy(ERR_TP[21], "invalid conversation for a function identity");
     strcpy(ERR_TP[24], "a wrong start token for factor");
     strcpy(ERR_TP[30], "too long for a number");
     strcpy(ERR_TP[31], "number is out-of-range");
     strcpy(ERR_TP[33], "invalid statement for lacking a token ')'");
     strcpy(ERR_TP[34], "invalid statement for lacking a token '('");
-    strcpy(ERR_TP[35], "invalid identity without declaration");
     strcpy(ERR_TP[36], "function needs '()' token");
     strcpy(ERR_TP[37], "statement needs start after '{' token");
     strcpy(ERR_TP[38], "statement needs ending with '}' token");
@@ -113,6 +117,8 @@ void init_errors()
     strcpy(ERR_TP[43], "no variable to use for auto-increment statement");
     strcpy(ERR_TP[44], "no variable to use for auto-decrement statement");
     strcpy(ERR_TP[45], "a while symbol is need for repeat statement");
+    strcpy(ERR_TP[46], "a wrong follow symbol for logic or judgement");
+    strcpy(ERR_TP[47], "a wrong follow symbol for logic and judgement");
     strcpy(ERR_TP[60], "program is too long --end");
     strcpy(ERR_TP[61], "Displacement address is too big --end");
 }
