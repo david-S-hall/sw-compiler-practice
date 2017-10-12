@@ -30,12 +30,13 @@ void init_setting()
 	wsym[3] = funcsym;
     wsym[4] = ifsym;
 	wsym[5] = insym;
-	wsym[6] = printsym;
-	wsym[7] = readsym;
-	wsym[8] = repeatsym;
-	wsym[9] = returnsym;
-	wsym[10] = varsym;
-    wsym[11] = whilesym;
+	wsym[6] = letsym;
+	wsym[7] = printsym;
+	wsym[8] = readsym;
+	wsym[9] = repeatsym;
+	wsym[10] = returnsym;
+	wsym[11] = varsym;
+    wsym[12] = whilesym;
 
 	/* reversed words dict */
 	strcpy(word[0], "call");
@@ -44,12 +45,13 @@ void init_setting()
 	strcpy(word[3], "func");
 	strcpy(word[4], "if");
 	strcpy(word[5], "in");
-	strcpy(word[6], "print");
-	strcpy(word[7], "read");
-	strcpy(word[8], "repeat");
-	strcpy(word[9], "return");
-	strcpy(word[10], "var");
-	strcpy(word[11], "while");
+	strcpy(word[6], "let");
+	strcpy(word[7], "print");
+	strcpy(word[8], "read");
+	strcpy(word[9], "repeat");
+	strcpy(word[10], "return");
+	strcpy(word[11], "var");
+	strcpy(word[12], "while");
 
 	/* fct code dict */
 	strcpy(mnemonic[lit], "lit");
@@ -99,6 +101,8 @@ void init_errors()
     strcpy(ERR_TP[12], "a variable type need for lhs");
     strcpy(ERR_TP[13], "lack of become token for assignment statement");
     strcpy(ERR_TP[14], "invalid call statement without function identity");
+    strcpy(ERR_TP[15], "a declaration of constant type must initialize with a value");
+    strcpy(ERR_TP[16], "a non-variable type instance cannot be auto-increment or auto-decrement");
     strcpy(ERR_TP[19], "statement ending with a wrong follow symbol");
     strcpy(ERR_TP[20], "a relation operator is lost");
     strcpy(ERR_TP[21], "invalid conversation for a function identity");

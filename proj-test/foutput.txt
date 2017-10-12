@@ -1,6 +1,7 @@
 0 var i;
 1 var j;
 1 var sum;
+1 let some = 1;
 1 func test(){
 1   var a;
 1   a = 1;
@@ -23,10 +24,13 @@
 49     print(sum+2);
 53 }while(i <= 10);
 57 i = -1;
-60 if 2<1 && 1<2 || 2>1 {
+60 if 2<1 && 1<2 || 2>1 { //hkhkhk
 71    print(!++i<<2);
 82 };
 83 i = 5;
 85 i <<= 1;
 89 print(i);
-91 print(5&7);
+91 i = 1;
+93 print((i++)*(i++));
+105 print(5&7);
+109 print(some);

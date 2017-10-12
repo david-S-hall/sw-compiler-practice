@@ -431,11 +431,30 @@ void problem(int lev, int tx, bool* fsys)
     /* declaration list parsing */
     do {
         /* variable declaration parsing */
-        while (sym == varsym)
+        while (sym == varsym || sym == letsym)
         {
-            getsym();
-            declaration(variable, &tx, lev, &dx);
+            if (sym == varsym)
+            {
+                getsym();
+                if (sym == ident)
+                    declaration(variable, &tx, lev, &dx);
+                else error(4);
 
+
+            }
+            else if(sym == letsym)
+            {
+                getsym();
+                if (sym == ident) getsym();
+                else error(4);
+
+                if (sym == becomes) getsym();
+                else error(13);
+
+                if (sym == number)
+                    declaration(constant, &tx, lev, &dx);
+                else error(15);
+            }
             if (sym == semicolon)
                 getsym();
             else error(5);
@@ -522,15 +541,10 @@ void problem(int lev, int tx, bool* fsys)
  * lev:		symbol is in main block or function body
  * pdx:		relative address for current variable
  */
-void declaration(OBJECT tp, int *ptx, int lev, int* pdx)
+inline void declaration(OBJECT tp, int *ptx, int lev, int* pdx)
 {
-	if (sym == ident)
-	{
-		enter(tp, ptx, lev, pdx);
-		getsym();
-	}
-	else
-		error(4);
+	enter(tp, ptx, lev, pdx);
+	getsym();
 }
 
 
@@ -546,6 +560,9 @@ void forstatrange(bool* fsys, int* ptx, int lev)
 			{
 			    switch (table[i].kind)
 			    {
+                    case constant:
+                        gen(lit, 0, table[i].val);
+                        break;
                     case variable:
 				        gen(lod, lev-table[i].level, table[i].adr);
 		                break;
@@ -1246,12 +1263,17 @@ void factor(bool* fsys, int* ptx, int lev)
         /* the factor is a identity type */
         else if (sym == ident)
         {
+            int idtp = -1;
             i = position(id, *ptx);
             if (i == 0) error(11);  // a no-declaration identity
             else
             {
+                idtp = table[i].kind;
                 switch (table[i].kind)
                 {
+                    case constant:
+                        gen(lit, 0, table[i].val);
+                        break;
                     case variable:
                         gen(lod, lev-table[i].level, table[i].adr);
                         break;
@@ -1264,14 +1286,18 @@ void factor(bool* fsys, int* ptx, int lev)
             /* a post-autoincrement | post-autodecrement variable factor */
             if (sym == autoincre || sym == autodecre)
             {
-                int op = sym == autoincre ? 2 : 3;
-                /* post-autoincrement | post-autodecrement left a value before processing to operate */
-                gen(lod, lev-table[i].level, table[i].adr);
-                /* do variable increment */
-                gen(lit, 0, 1);
-                gen(opr, 0, op);
-                gen(sto, lev-table[i].level, table[i].adr);
-                getsym();
+                if (idtp == variable)
+                {
+                    int op = sym == autoincre ? 2 : 3;
+                    /* post-autoincrement | post-autodecrement left a value before processing to operate */
+                    gen(lod, lev-table[i].level, table[i].adr);
+                    /* do variable increment */
+                    gen(lit, 0, 1);
+                    gen(opr, 0, op);
+                    gen(sto, lev-table[i].level, table[i].adr);
+                    getsym();
+                }
+                else error(16);
             }
         }
         /* a pre-autoincrement | pre-autodecrement variable factor */
@@ -1297,6 +1323,7 @@ void factor(bool* fsys, int* ptx, int lev)
                         /* load variable's new value */
                         gen(lod, lev-table[i].level, table[i].adr);
                     }
+                    else error(16);
                 }
             }
         }

@@ -15,6 +15,14 @@ void enter(OBJECT k, int* ptx, int lev, int* pdx)
 	table[(*ptx)].kind = k;
 	switch(k)
 	{
+        case constant:
+            if (num > BOUND_ADR)
+            {
+                error(31);      // out of range
+                num = 0;
+            }
+            table[(*ptx)].val = num;
+            break;
 		case variable:
 			table[(*ptx)].level = lev;
 			table[(*ptx)].adr = (*pdx);
@@ -274,7 +282,7 @@ void interpret()
                 break;
             case in:	/* read an input into stack top */
                 t = t + 1;
-                printf("Enter the variable:\n");
+                printf(">>>  ");
                 scanf("%d", &(s[t]));
                 //fprintf(fresult, "%d\n", s[t]);
                 break;

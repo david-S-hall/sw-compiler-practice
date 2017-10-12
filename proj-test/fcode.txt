@@ -88,11 +88,27 @@
 88 sto 0 3
 89 lod 0 3
 90  0 0
-91 lit 0 5
-92 lit 0 7
-93 opr 0 10
-94  0 0
-95 opr 0 0
+91 lit 0 1
+92 sto 0 3
+93 lod 0 3
+94 lod 0 3
+95 lit 0 1
+96 opr 0 2
+97 sto 0 3
+98 lod 0 3
+99 lod 0 3
+100 lit 0 1
+101 opr 0 2
+102 sto 0 3
+103 opr 0 4
+104  0 0
+105 lit 0 5
+106 lit 0 7
+107 opr 0 10
+108  0 0
+109 lit 0 1
+110  0 0
+111 opr 0 0
 0 jmp 0 18
 1 int 0 4
 2 lit 0 1
@@ -184,8 +200,24 @@
 88 sto 0 3
 89 lod 0 3
 90  0 0
-91 lit 0 5
-92 lit 0 7
-93 opr 0 10
-94  0 0
-95 opr 0 0
+91 lit 0 1
+92 sto 0 3
+93 lod 0 3
+94 lod 0 3
+95 lit 0 1
+96 opr 0 2
+97 sto 0 3
+98 lod 0 3
+99 lod 0 3
+100 lit 0 1
+101 opr 0 2
+102 sto 0 3
+103 opr 0 4
+104  0 0
+105 lit 0 5
+106 lit 0 7
+107 opr 0 10
+108  0 0
+109 lit 0 1
+110  0 0
+111 opr 0 0
