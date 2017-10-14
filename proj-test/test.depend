@@ -1,0 +1,25 @@
+# depslib dependency file v1.0
+1507775848 source:e:\work\compiler\sw-compiler\proj-test\init.c
+	<string.h>
+	"compiler.h"
+
+1507639916 e:\work\compiler\sw-compiler\proj-test\compiler.h
+	<stdio.h>
+	"setting.h"
+
+1507774311 e:\work\compiler\sw-compiler\proj-test\setting.h
+	<stdbool.h>
+
+1507615971 source:e:\work\compiler\sw-compiler\proj-test\main.c
+	<stdio.h>
+	<stdlib.h>
+	"compiler.h"
+
+1507775899 source:e:\work\compiler\sw-compiler\proj-test\compiler.c
+	<string.h>
+	<ctype.h>
+	"compiler.h"
+
+1507774551 source:e:\work\compiler\sw-compiler\proj-test\tools.c
+	"compiler.h"
+
