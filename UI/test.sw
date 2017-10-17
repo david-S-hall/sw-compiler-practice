@@ -34,3 +34,5 @@ i = 1;
 print((i++)*(i++));
 print(5&7);
 print(some);
+read(i);
+print(i);

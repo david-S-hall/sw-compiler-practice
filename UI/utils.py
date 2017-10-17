@@ -46,7 +46,7 @@ class Interpret(object):
 		return self.buf
 
 	def showStack(self):
-		return [self.s[x] for x in range(self.t)]
+		return [self.s[x] for x in xrange(self.t+1)]
 
 	def sg_step(self):
 		p, b, t, s = self.p, self.b, self.t, self.s
@@ -159,6 +159,7 @@ class Interpret(object):
 			tag = 1
 		if i.f == "out":	# output
 			self.buf = s[t]
+			print self.buf
 			tag = 2
 			t = t - 1
 

@@ -10,7 +10,7 @@
 1507961285 e:\work\compiler\sw-compiler\proj-test\setting.h
 	<stdbool.h>
 
-1508173927 source:e:\work\compiler\sw-compiler\proj-test\main.c
+1508230530 source:e:\work\compiler\sw-compiler\proj-test\main.c
 	<stdio.h>
 	<stdlib.h>
 	"compiler.h"

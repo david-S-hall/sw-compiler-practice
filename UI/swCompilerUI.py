@@ -1,5 +1,6 @@
 import sys, os, time
 import json
+import threading
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4 import uic
@@ -27,38 +28,54 @@ def judge():
 			return False
 		time.sleep(0.1)
 
+def procRun(codeList, window):
+	window.interpret = Interpret(codeList)
+	run = window.interpret
+	while True:
+		print run.showStack()
+		tag = run.sg_step()
+		#print run.showStack()
+		if tag == 1:	#input
+			window.input()
+		if tag == 2:	#output
+			window.output(run.recv())
+		if run.judge() == False:
+			break
+	window.output("=== the processing is over ===")
+
 class RuntimeWin(QMainWindow, UI_RtmWindow):
 	def __init__(self, mod = 0):
 		QMainWindow.__init__(self)
 		UI_RtmWindow.__init__(self)
 		self.setupUi(self)
 		self.mod = mod
+		self.iptsgl = 0
 		self.initUI()
 
-	def procRun(self):
-		run = self.interpret
-		while True:
-			tag = run.sg_step()
-			#print run.showStack()
-			if tag == 1:
-				run.send(3)
-			if tag == 2:
-				print run.recv()
-			if run.judge() == False:
-				break
+	def output(self, s):
+		if type(s) == type(1):
+			s = str(s)
+		self.RuntimePad.textCursor().insertText(s+'\n')
+
+	def input(self):
+		self.RuntimePad.textCursor().insertText(">>>\t")
+		self.InputTextPad.setEnabled(True)
+		ipt = None
+		while self.iptsgl == 0:
+			time.sleep(0.05)
+		self.iptsgl = 0
+		ipt = self.InputTextPad.text()
+		self.interpret.send(ipt.toInt()[0])
+		self.RuntimePad.textCursor().insertText(ipt+"\n")
+		self.InputTextPad.setText("")
+		self.InputTextPad.setEnabled(False)
+
+	def inputwait(self):
+		self.iptsgl = 1
 
 	def initUI(self):
-		import codecs
-		fctData = codecs.open(os.getcwd()+"\\fcode.json", 'r', 'utf-8').read()
-		fctData = json.loads(fctData)
-
-		TACLists = []
-		for code in fctData[u"codes"]:
-			TAC_T = code[u"code"]
-			TAC = Instruction(TAC_T[u"f"], TAC_T[u"l"], TAC_T[u"a"])
-			self.TACCodeLists.addItem("({0}, {1}, {2})".format(TAC.f, TAC.l, TAC.a))
-			TACLists.append(TAC)
-		self.interpret = Interpret(TACLists)
+		self.InputTextPad.setEnabled(False)
+		self.connect(self.InputTextPad, SIGNAL("returnPressed()"), self.inputwait)
 
 		if self.mod == 0:
 			self.actionStepnext.setEnabled(False)
@@ -66,7 +83,20 @@ class RuntimeWin(QMainWindow, UI_RtmWindow):
 			self.actionStepover.setEnabled(False)
 			self.actionStepout.setEnabled(False)
 
-		self.show()
+		import codecs
+		fctData = codecs.open(os.getcwd()+"\\fcode.json", 'r', 'utf-8').read()
+		fctData = json.loads(fctData)
+		TACLists = []
+		idx = 0
+		for code in fctData[u"codes"]:
+			TAC_T = code[u"code"]
+			TAC = Instruction(TAC_T[u"f"], TAC_T[u"l"], TAC_T[u"a"])
+			self.TACCodeLists.addItem("{0}\t({1}, {2}, {3})"\
+				.format(idx, TAC.f, TAC.l, TAC.a))
+			TACLists.append(TAC)
+			idx += 1
+		self.codeList = TACLists
+		self.show()    	
 
 	def closeEvent(self, event):
 		cleanfiles()
@@ -118,7 +148,7 @@ class SWCompiler(QMainWindow, UI_MainWindow):
 			curfile = curfile+"~.tmp"
 
 		codecs.open(curfile, 'w', 'utf-8').write(text)
-		os.system(os.getcwd()+"\\test.exe "+curfile)
+		os.system(os.getcwd()+"\\swcpl.exe "+curfile)
 		if judge() == True:
 			errData = codecs.open(os.getcwd()+"\\ferr.json", 'r', 'utf-8').read()
 			errData = json.loads(errData)
@@ -136,7 +166,10 @@ class SWCompiler(QMainWindow, UI_MainWindow):
 				
 			if errData[u'errNum'] == 0:
 				self.runDlg = RuntimeWin(0)
-				self.runDlg.procRun()
+				self.IOthread = threading.Thread(target=procRun,\
+					args=(self.runDlg.codeList, self.runDlg))
+				#self.IOthread.setDaemon('True')
+				self.IOthread.start()
 				cleanfiles()
 		else:
 			QMessageBox.critical(self, "Critical", self.tr("Compiler processing error"))
