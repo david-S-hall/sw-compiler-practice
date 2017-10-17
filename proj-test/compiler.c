@@ -2,25 +2,6 @@
 #include <ctype.h>
 #include "compiler.h"
 
-#define __DEBUG__
-
-#ifdef __DEBUG__
-
-char symNames[N_SYM][15] =
-{
-    "null",     "identity", "number",   "plus",     "minus",
-    "times",    "slash",    "mod",      "plusbe",   "minusbe",
-    "timesbe",  "slashbe",  "modbe",    "becomes",  "eql",
-    "neq",      "lss",      "leq",      "gtr",      "geq",
-    "lparen",   "rparen",   "lbrace",   "rbrace",   "range",
-    "semicolon","ifsym",    "elsesym",  "forsym",   "insym",
-    "whilesym", "readsym", "printsym", "callsym", "varsym", "funcsym",
-    "period", "autoincre", "autodecre", "returnsym", "repeatsym",
-     "andsym", "orsym", "notsym"
-};
-
-#endif
-
 void init()
 {
 	init_setting();
@@ -45,7 +26,9 @@ void parsing()
 
 void processing()
 {
-    fprintf(ferr, "=== Build finished: ");
+    fprintf(ferr, "],\n");
+    fprintf(ferr, "\"errNum\":%d,\n", err_num);
+    fprintf(ferr, "\"total\":\"=== Build finished: ");
     if (err_num)
     {
         fprintf(ferr, "%d error(s)", err_num);
@@ -53,23 +36,27 @@ void processing()
         {
             fprintf(ferr, ", more errors are collapsed");
         }
-        fprintf(ferr, " ===\n");
+        fprintf(ferr, " ===\"");
+        fprintf(ferr, "\n}\n");
     }
     else
     {
-        fprintf(ferr, "Parsing success ===\n");
+        fprintf(ferr, "Parsing success ===\"");
+        fprintf(ferr, "\n}\n");
 
         listall();
-        fclose(fcode);
-
+        #ifdef __DEBUG__
         interpret();
-        fclose(fresult);
+        #endif
     }
-
-    fclose(fin);
     fclose(ferr);
-    fclose(ftable);
+    fclose(fcode);
+    fclose(fin);
+    #ifdef __DEBUG__
     fclose(foutput);
+    fclose(ftable);
+    fclose(fresult);
+    #endif
 }
 
 void error(int n)
@@ -80,8 +67,8 @@ void error(int n)
         processing();
         return;
     }
-
-    fprintf(ferr, "# line %d, type %d: %s\n", line_num, n, ERR_TP[n]);
+    if (err_num > 1) fprintf(ferr, err_num > 1 ? ",\n" : "\n");
+    fprintf(ferr, "{\"typeno\":\"%d\", \"line\":\"%d\", \"message\":\"%s\"}", n, line_num, ERR_TP[n]);
 }
 
 void getch()
@@ -497,7 +484,7 @@ void problem(int lev, int tx, bool* fsys)
         code[table[tx0].adr].a = cx;
     table[tx0].adr = cx;
     table[tx0].size = dx;
-    #ifdef __DEBUG__
+    #ifdef __TEST__
     cx0 = cx;
     #endif
     gen(ini, 0, dx);
@@ -508,6 +495,10 @@ void problem(int lev, int tx, bool* fsys)
         {
             switch (table[i].kind)
             {
+                case constant:
+					fprintf(ftable, "    %d const %s ", i, table[i].name);
+					fprintf(ftable, "val=%d\n", table[i].val);
+					break;
                 case variable:
                     fprintf(ftable, "    %d var   %s ", i, table[i].name);
                     fprintf(ftable, "lev=%d addr=%d\n", table[i].level, table[i].adr);
@@ -528,7 +519,7 @@ void problem(int lev, int tx, bool* fsys)
     gen(opr, 0, 0);
     memset(nxtlev, 0, sizeof nxtlev);
     test(fsys, nxtlev, 8);
-    #ifdef __DEBUG__
+    #ifdef __TEST__
     listcode(cx0);
     #endif
 }
@@ -725,7 +716,7 @@ void statement(bool* fsys, int* ptx, int lev)
                     i = position(id, *ptx);
                 else i = 0;
 
-                if (i == 0) error(35);  // identity in read() still not declared
+                if (i == 0) error(11);  // identity in read() still not declared
                 else
                 {
                     gen(in, 0, 0);    // generate input instruction
@@ -1347,7 +1338,7 @@ void factor(bool* fsys, int* ptx, int lev)
             expression(nxtlev, ptx, lev);
             if (sym == rparen)
                 getsym();
-            else error(22); // lack ')'
+            else error(33); // lack ')'
         }
         memset(nxtlev, 0, sizeof nxtlev);
         nxtlev[lparen] = true;

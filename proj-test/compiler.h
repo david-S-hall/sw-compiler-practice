@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "setting.h"
 
+#undef __DEBUG__
 
 typedef struct TableStruct
 {
@@ -70,6 +71,7 @@ int mulset(bool* sr, bool* s1, bool* s2, int n);
 void parsing();
 void processing();
 void interpret();
+void debug();
 void listcode(int cx0);
 void listall();
 void problem(int lev, int tx, bool* fsys);

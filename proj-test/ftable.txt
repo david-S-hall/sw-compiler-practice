@@ -1,11 +1,13 @@
     1 var   i lev=0 addr=3
     2 var   j lev=0 addr=4
     3 var   sum lev=0 addr=5
+    4 const some val=1
     5 func  test lev=0 addr=1 size=4
     6 var   a lev=1 addr=3
 
     1 var   i lev=0 addr=3
     2 var   j lev=0 addr=4
     3 var   sum lev=0 addr=5
+    4 const some val=1
     5 func  test lev=0 addr=1 size=4
 

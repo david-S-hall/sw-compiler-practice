@@ -63,8 +63,8 @@ void init_setting()
 	strcpy(mnemonic[jmp], "jmp");
 	strcpy(mnemonic[jne], "jne");
 	strcpy(mnemonic[jeq], "jeq");
-	strcpy(mnemonic[jeq], "in");
-	strcpy(mnemonic[jeq], "out");
+	strcpy(mnemonic[in], "in");
+	strcpy(mnemonic[out], "out");
 
 	/* start sets setting */
 	declbegsys[varsym] = true;
@@ -92,7 +92,7 @@ void init_setting()
 void init_errors()
 {
     strcpy(ERR_TP[4], "declaration lacks identity");
-    strcpy(ERR_TP[5], "declaration has no primary token ';'");
+    strcpy(ERR_TP[5], "lack primary token ';'");
     strcpy(ERR_TP[6], "a wrong statement start token or function declaration");
     strcpy(ERR_TP[7], "a wrong follow token after declaration");
     strcpy(ERR_TP[8], "a wrong follow token after statement");
@@ -137,10 +137,12 @@ void init_proc()
 
 	tableswitch = 1;
 	listswitch = 1;
-
-    fresult = fopen("fresult.txt", "w");
-    ferr = fopen("ferr.txt", "w");
+    #ifdef __DEBUG__
+	fresult = fopen("fresult.tmp", "w");
     ftable = fopen("ftable.txt", "w");
-    fcode = fopen("fcode.txt", "w");
     foutput = fopen("foutput.txt", "w");
+    #endif
+    fcode = fopen("fcode.json", "w");
+    ferr = fopen("ferr.json", "w");
+    fprintf(ferr, "{\n\"errors\":[\n");
 }

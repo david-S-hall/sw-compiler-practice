@@ -1,4 +1,5 @@
 #include "compiler.h"
+#include <string.h>
 
 /*
  * add new to symbol table
@@ -282,21 +283,19 @@ void interpret()
                 break;
             case in:	/* read an input into stack top */
                 t = t + 1;
-                printf(">>>  ");
+                printf(">>>\t");
                 scanf("%d", &(s[t]));
-                //fprintf(fresult, "%d\n", s[t]);
                 break;
             case out:	/* output stack top */
                 printf("%d\n", s[t]);
-                fprintf(fresult, "%d", s[t]);
+                fprintf(fresult, "%d\n", s[t]);
 				t = t - 1;
 				break;
         }
     } while (p != 0);
 }
 
-
-
+#ifdef __DEBUG__
 /*
  * output code list
  */
@@ -320,7 +319,25 @@ void listall()
 {
     if(listswitch)
     {
+        fprintf(fcode, "{\"codes\":[\n");
         for (int i = 0; i < cx; ++i)
+        {
+            // printf("%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
+            fprintf(fcode,"%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
+        }
+        fprintf(fcode, "]}\n");
+    }
+}
+#else
+/*
+ * output code list
+ */
+void listcode(int cx0)
+{
+    if(listswitch)
+    {
+        puts("");
+        for(int i = cx0; i < cx; ++i)
         {
             // printf("%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
             fprintf(fcode,"%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
@@ -328,6 +345,27 @@ void listall()
     }
 }
 
+/*
+ * output all codes
+ */
+void listall()
+{
+    if(listswitch)
+    {
+        fprintf(fcode, "{\"codes\":[\n");
+        for (int i = 0; i < cx; ++i)
+        {
+            // printf("%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
+            fprintf(fcode,"{\"no\":\"%d\",\"code\":", i);
+            fprintf(fcode,"{\"f\":\"%s\",\"l\":%d,\"a\":%d}}", mnemonic[code[i].f], code[i].l, code[i].a);
+            if (i != cx-1)
+                fprintf(fcode, ",");
+            fprintf(fcode, "\n");
+        }
+        fprintf(fcode, "]}\n");
+    }
+}
+#endif
 int inset(int e, bool* s)
 {
 	return s[e];

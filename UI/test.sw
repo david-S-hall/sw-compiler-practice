@@ -16,7 +16,7 @@ sum = 0;
 for i in 1 ..<10 {
     sum = sum + 1;
   };
-print(sum);	// sdfsdf
+print(sum);
 i = 1;
 repeat{
     sum += 1;
