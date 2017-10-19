@@ -6,14 +6,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>770</width>
-    <height>598</height>
+    <width>772</width>
+    <height>588</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>sw-compiler</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">border-color: rgba(40, 40, 40, 150);
+background-color: rgb(125, 125, 125);
+color: rgb(225, 225, 225);</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="font">
+    <font>
+     <family>Consolas</family>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(91, 91, 91);</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
      <number>0</number>
@@ -29,6 +42,10 @@
         <verstretch>30</verstretch>
        </sizepolicy>
       </property>
+      <property name="styleSheet">
+       <string notr="true">border-color: rgba(0, 0, 0, 0);
+border-top-color: rgb(40, 43, 55);</string>
+      </property>
       <property name="widgetResizable">
        <bool>true</bool>
       </property>
@@ -37,30 +54,55 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>768</width>
-         <height>344</height>
+         <width>770</width>
+         <height>352</height>
         </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(12, 16, 33);
+selection-background-color: rgb(24, 37, 75);</string>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <property name="spacing">
          <number>0</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>20</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
          <number>0</number>
         </property>
         <item>
          <widget class="QPlainTextEdit" name="codeTextEdit">
           <property name="font">
            <font>
-            <family>Microsoft YaHei UI</family>
-            <pointsize>10</pointsize>
+            <family>Consolas</family>
+            <pointsize>12</pointsize>
            </font>
           </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
           <property name="lineWidth">
-           <number>1</number>
+           <number>0</number>
           </property>
           <property name="midLineWidth">
            <number>0</number>
+          </property>
+          <property name="plainText">
+           <string/>
           </property>
          </widget>
         </item>
@@ -70,6 +112,9 @@
     </item>
     <item>
      <widget class="QTabWidget" name="infoTabs">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
         <horstretch>0</horstretch>
@@ -82,65 +127,208 @@
         <height>0</height>
        </size>
       </property>
+      <property name="font">
+       <font>
+        <family>Consolas</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(84, 84, 84);
+color: rgb(255, 255, 255);
+border-bottom-color: rgb(91, 91, 91);</string>
+      </property>
+      <property name="tabPosition">
+       <enum>QTabWidget::North</enum>
+      </property>
+      <property name="tabShape">
+       <enum>QTabWidget::Triangular</enum>
+      </property>
       <property name="currentIndex">
        <number>0</number>
       </property>
+      <property name="elideMode">
+       <enum>Qt::ElideNone</enum>
+      </property>
+      <property name="documentMode">
+       <bool>true</bool>
+      </property>
+      <property name="tabsClosable">
+       <bool>false</bool>
+      </property>
+      <property name="movable">
+       <bool>false</bool>
+      </property>
       <widget class="QWidget" name="errMsg">
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border-left-color: rgb(12, 16, 33);
+border-right-color: rgb(12, 16, 33);
+border-bottom-color: rgb(84, 84, 84);
+border-top-color: rgb(91, 91, 91);</string>
+       </property>
        <attribute name="title">
-        <string>Tab 1</string>
+        <string>Error Msg</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <property name="spacing">
          <number>0</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
          <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>3</number>
         </property>
         <item>
          <widget class="QTableWidget" name="errorMsgTable">
+          <property name="font">
+           <font>
+            <family>Consolas</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: rgb(255, 255, 255);
+background-color: rgb(12, 16, 33);
+selection-background-color: rgb(24, 37, 75);</string>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
           <property name="lineWidth">
-           <number>0</number>
+           <number>1</number>
           </property>
           <property name="midLineWidth">
            <number>100</number>
           </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <property name="horizontalScrollMode">
+           <enum>QAbstractItemView::ScrollPerPixel</enum>
+          </property>
+          <property name="gridStyle">
+           <enum>Qt::NoPen</enum>
+          </property>
+          <attribute name="horizontalHeaderHighlightSections">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="verticalHeaderHighlightSections">
+           <bool>false</bool>
+          </attribute>
          </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>Tab 2</string>
-       </attribute>
-      </widget>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>2</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QFrame" name="frame">
+      <property name="font">
+       <font>
+        <family>Microsoft YaHei UI Light</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(85, 85, 85);
+border-top-color: rgb(125, 125, 125);</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>3</number>
+       </property>
+       <property name="topMargin">
+        <number>1</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>2</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="workPathLabel">
+         <property name="font">
+          <font>
+           <family>Consolas</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="contextMenuPolicy">
+          <enum>Qt::NoContextMenu</enum>
+         </property>
+         <property name="text">
+          <string>标签</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>770</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menu_File">
-    <property name="title">
-     <string>&amp;File</string>
-    </property>
-    <addaction name="actionNew"/>
-    <addaction name="separator"/>
-    <addaction name="actionOpen"/>
-    <addaction name="actionSave"/>
-   </widget>
-   <addaction name="menu_File"/>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
+   <property name="contextMenuPolicy">
+    <enum>Qt::NoContextMenu</enum>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="floatable">
+    <bool>true</bool>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -153,13 +341,14 @@
    <addaction name="actionSave"/>
    <addaction name="separator"/>
    <addaction name="actionBuildAndRun"/>
-   <addaction name="actionDebugOrContinue"/>
+   <addaction name="actionDebug"/>
+   <addaction name="separator"/>
   </widget>
   <action name="actionNew">
    <property name="icon">
     <iconset>
-     <normalon>New.png</normalon>
-    </iconset>
+     <normaloff>icons/New.png</normaloff>
+     <normalon>New.png</normalon>icons/New.png</iconset>
    </property>
    <property name="text">
     <string>New</string>
@@ -168,8 +357,8 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset>
-     <normalon>Open.png</normalon>
-    </iconset>
+     <normaloff>icons/Open.png</normaloff>
+     <normalon>Open.png</normalon>icons/Open.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Open</string>
@@ -178,16 +367,16 @@
   <action name="actionBuildAndRun">
    <property name="icon">
     <iconset>
-     <normaloff>system-run.png</normaloff>system-run.png</iconset>
+     <normaloff>icons/system-run.png</normaloff>icons/system-run.png</iconset>
    </property>
    <property name="text">
     <string>build and run</string>
    </property>
   </action>
-  <action name="actionDebugOrContinue">
+  <action name="actionDebug">
    <property name="icon">
     <iconset>
-     <normaloff>Debug.png</normaloff>Debug.png</iconset>
+     <normaloff>icons/Debug.png</normaloff>icons/Debug.png</iconset>
    </property>
    <property name="text">
     <string>debug/continue</string>
@@ -196,8 +385,8 @@
   <action name="actionSave">
    <property name="icon">
     <iconset>
-     <normalon>Save.png</normalon>
-    </iconset>
+     <normaloff>icons/Save.png</normaloff>
+     <normalon>Save.png</normalon>icons/Save.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Save</string>

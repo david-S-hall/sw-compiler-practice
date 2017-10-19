@@ -1,6 +1,5 @@
 #!/usr/bin/python                                                                                                                                                      
-# -*- coding: utf-8 -*-
-# author: 
+# -*- coding: utf-8 -*
 
 import time
 
@@ -13,19 +12,16 @@ class Instruction(object):
 class Interpret(object):
 	def __init__(self, taclist):
 		self.code = taclist
+		self.paramInit()
+
+	def paramInit(self):
 		self.buf = None
-		self.debugop = 0
-		
 		self.c = 0		# current code index
 		self.p = 0		# pointer of code
 		self.b = 1		# base address of code
 		self.t = 0		# pointer of stack top
 		# runtime stack
 		self.s = [0 for x in range(500)]
-
-	def wait(self):
-		while self.debugop == 0:
-			time.sleep(0.1)
 
 	def judge(self):
 		if self.p == 0:
@@ -159,7 +155,6 @@ class Interpret(object):
 			tag = 1
 		if i.f == "out":	# output
 			self.buf = s[t]
-			print self.buf
 			tag = 2
 			t = t - 1
 

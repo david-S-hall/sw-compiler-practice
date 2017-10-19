@@ -27,7 +27,6 @@ i = -1;
 if 2<1 && 1<2 || 2>1 { //hkhkhk
    print(!++i<<2);
 };
-/*sllllllll*/
 i = 5;
 i <<= 1;
 print(i);
@@ -35,5 +34,3 @@ i = 1;
 print((i++)*(i++));
 print(5&7);
 print(some);
-read(i);
-print(i);

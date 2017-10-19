@@ -1,0 +1,29 @@
+QScrollBar:vertical
+{
+    width:10px;
+    background:rgb(37,37,37);
+    padding:8px,8px,8px,8px;
+}
+QScrollBar::handle:vertical
+{
+    width:8px;
+    background:rgb(73,73,73);
+    border-radius:5px;
+    min-height:20;
+}
+QScrollBar::handle:vertical:hover
+{
+    background:rgb(75,75,75);
+}
+QScrollBar::add-line:vertical
+{
+    background:rgba(0,0,0,0%)
+}
+QScrollBar::sub-line:vertical
+{
+    background:rgba(0,0,0,0%);
+}
+QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical
+{
+    background:rgb(39,39,39);
+}

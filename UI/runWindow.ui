@@ -7,13 +7,22 @@
     <x>0</x>
     <y>0</y>
     <width>760</width>
-    <height>571</height>
+    <height>540</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Run</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(150, 150, 140);
+font: 9pt &quot;Consolas&quot;;
+alternate-background-color: rgb(150, 150, 140);
+color: rgb(255, 255, 255);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(100, 100, 100);</string>
+   </property>
    <layout class="QGridLayout" name="gridLayout">
     <property name="margin">
      <number>0</number>
@@ -39,101 +48,6 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="2" rowspan="3">
-     <widget class="QToolBox" name="toolBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>10</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="currentIndex">
-       <number>1</number>
-      </property>
-      <property name="tabSpacing">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="TACPage">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>242</width>
-         <height>531</height>
-        </rect>
-       </property>
-       <attribute name="label">
-        <string>Intermediate codes</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <property name="margin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QListWidget" name="TACCodeLists">
-          <item>
-           <property name="text">
-            <string>Code</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="stackPage">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>242</width>
-         <height>531</height>
-        </rect>
-       </property>
-       <attribute name="label">
-        <string>Runtime stack</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <property name="margin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QListWidget" name="StackValuesLists">
-          <item>
-           <property name="text">
-            <string>Value</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QTextBrowser" name="RuntimePad">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>20</horstretch>
-        <verstretch>35</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="1">
      <widget class="QLineEdit" name="InputTextPad">
       <property name="minimumSize">
@@ -144,12 +58,59 @@
       </property>
       <property name="font">
        <font>
-        <family>Arial</family>
-        <pointsize>11</pointsize>
+        <family>Consolas</family>
+        <pointsize>14</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(125, 130, 130);
+selection-background-color: rgb(93, 93, 93);
+alternate-background-color: rgb(93, 93, 93);
+font: 14pt &quot;Consolas&quot;;</string>
+      </property>
+      <property name="text">
+       <string/>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+      <property name="readOnly">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPlainTextEdit" name="RuntimePad">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>20</horstretch>
+        <verstretch>35</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Consolas</family>
+        <pointsize>14</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(100, 105, 105);
+font: 14pt &quot;Consolas&quot;;</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+      <property name="plainText">
+       <string/>
       </property>
      </widget>
     </item>
@@ -165,15 +126,92 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionStop"/>
    <addaction name="actionStepnext"/>
-   <addaction name="actionStepinto"/>
    <addaction name="actionStepover"/>
    <addaction name="actionStepout"/>
+  </widget>
+  <widget class="QDockWidget" name="TACCodeDock">
+   <property name="windowIcon">
+    <iconset>
+     <normaloff>system-run.png</normaloff>system-run.png</iconset>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Intermediate codes</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="TACCodeContent">
+    <layout class="QVBoxLayout" name="verticalLayout_4">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QListWidget" name="TACCodeLists">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <item>
+        <property name="text">
+         <string>Code</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="RuntimeStkDock">
+   <property name="acceptDrops">
+    <bool>false</bool>
+   </property>
+   <property name="windowIcon">
+    <iconset>
+     <normaloff>system-run.png</normaloff>system-run.png</iconset>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Runtime stack</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="RuntimeStkContent">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QListWidget" name="StackValuesLists"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionStepinto">
    <property name="icon">
     <iconset>
-     <normaloff>Stepinto.png</normaloff>Stepinto.png</iconset>
+     <normaloff>icons/Stepinto.png</normaloff>icons/Stepinto.png</iconset>
    </property>
    <property name="text">
     <string>stepinto</string>
@@ -182,7 +220,7 @@
   <action name="actionStepnext">
    <property name="icon">
     <iconset>
-     <normaloff>Stepnext.png</normaloff>Stepnext.png</iconset>
+     <normaloff>icons/Stepnext.png</normaloff>icons/Stepnext.png</iconset>
    </property>
    <property name="text">
     <string>stepnext</string>
@@ -191,7 +229,7 @@
   <action name="actionStepover">
    <property name="icon">
     <iconset>
-     <normaloff>Stepover.png</normaloff>Stepover.png</iconset>
+     <normaloff>icons/Stepover.png</normaloff>icons/Stepover.png</iconset>
    </property>
    <property name="text">
     <string>stepover</string>
@@ -200,10 +238,19 @@
   <action name="actionStepout">
    <property name="icon">
     <iconset>
-     <normaloff>Stepout.png</normaloff>Stepout.png</iconset>
+     <normaloff>icons/Stepout.png</normaloff>icons/Stepout.png</iconset>
    </property>
    <property name="text">
     <string>stepout</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/stop.png</normaloff>icons/stop.png</iconset>
+   </property>
+   <property name="text">
+    <string>stop</string>
    </property>
   </action>
  </widget>
