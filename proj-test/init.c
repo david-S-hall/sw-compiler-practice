@@ -39,19 +39,22 @@ void init_setting()
     wsym[12] = whilesym;
 
 	/* reversed words dict */
-	strcpy(word[0], "call");
-	strcpy(word[1], "else");
-	strcpy(word[2], "for");
-	strcpy(word[3], "func");
-	strcpy(word[4], "if");
-	strcpy(word[5], "in");
-	strcpy(word[6], "let");
-	strcpy(word[7], "print");
-	strcpy(word[8], "read");
-	strcpy(word[9], "repeat");
-	strcpy(word[10], "return");
-	strcpy(word[11], "var");
-	strcpy(word[12], "while");
+	strcpy(word[0], "bool");
+	strcpy(word[1], "call");
+	strcpy(word[2], "char");
+	strcpy(word[3], "else");
+	strcpy(word[4], "for");
+	strcpy(word[5], "func");
+	strcpy(word[6], "if");
+	strcpy(word[7], "in");
+	strcpy(word[8], "int");
+	strcpy(word[9], "let");
+	strcpy(word[10], "print");
+	strcpy(word[11], "read");
+	strcpy(word[12], "repeat");
+	strcpy(word[13], "return");
+	strcpy(word[14], "var");
+	strcpy(word[15], "while");
 
 	/* fct code dict */
 	strcpy(mnemonic[lit], "lit");
@@ -107,6 +110,7 @@ void init_errors()
     strcpy(ERR_TP[20], "a relation operator is lost");
     strcpy(ERR_TP[21], "invalid conversation for a function identity");
     strcpy(ERR_TP[24], "a wrong start token for factor");
+    strcpy(ERR_TP[25], "non-variable identity cannot be read by input");
     strcpy(ERR_TP[30], "too long for a number");
     strcpy(ERR_TP[31], "number is out-of-range");
     strcpy(ERR_TP[33], "invalid statement for lacking a token ')'");

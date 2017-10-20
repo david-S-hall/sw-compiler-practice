@@ -111,17 +111,25 @@ class SWHighlighter(QSyntaxHighlighter):
 					"for",		"in",	"while",	"repeat",	"read",
 					"print",	"call",	"return",	"break",	"continue"]
 
-		OPERATORS = ["+", "-", "*", "/", "%", "&", "|", "~", "^", "!",
-					 "<", ">", "=", ".."]
+		BUILDINS = ["int", "char", "bool"]
+
+		OPERATORS = ["\+", "-", "\*", "/", "%", "&", "\|", "~", "\^", "\!",
+					 "<", ">", "="]
 
 		SWHighlighter.Rules.append((QRegExp(
 			"|".join([r"\b%s\b" % keyword for keyword in KEYWORDS])),
 			"keyword"))
 		SWHighlighter.Rules.append((QRegExp(
+			"|".join([r"\b%s\b" % buildin for buildin in BUILDINS])),
+			"buildin"))
+		SWHighlighter.Rules.append((QRegExp(
+			"|".join([r"%s" % operator for operator in OPERATORS])),
+			"operator"))
+		SWHighlighter.Rules.append((QRegExp(
 			r"\b[0-9]+\b"),
 			"number"))
 		SWHighlighter.Rules.append((QRegExp(
-			r"/\*.*\*/"),
+			r"/\*(.|\n|\r)*\*/"),
 			"comment"))
 		
 	@staticmethod
@@ -129,11 +137,16 @@ class SWHighlighter(QSyntaxHighlighter):
 		baseFormat = QTextCharFormat()
 		baseFormat.setFontFamily("Consolas")
 		baseFormat.setFontPointSize(12)
-		for name, color in (("normal", Qt.white),
-			("keyword", Qt.yellow), ("builtin", Qt.blue), 
-			("comment", Qt.gray), ("number", Qt.yellow)):
+		for name, fcolor, bcolor in (("normal", Qt.white, None),
+			("operator", QColor(175,238,238), None),
+			("keyword", Qt.yellow, None),
+			("buildin", QColor(164,219,255), None), 
+			("comment", QColor(230,230,230), QColor(234,165,153)),
+			("number", QColor(255,204,51), None)):
 			format = QTextCharFormat(baseFormat)
-			format.setForeground(QColor(color))
+			format.setForeground(QColor(fcolor))
+			if bcolor is not None:
+				format.setBackground(QColor(bcolor))
 			if name == "comment":
 				format.setFontItalic(True)
 			SWHighlighter.Formats[name] = format
@@ -245,6 +258,7 @@ class RuntimeWin(QMainWindow, UI_RtmWindow):
 		self.actionStepover.triggered.connect(self.Stepover)
 		self.actionStepout.triggered.connect(self.Stepout)
 
+		self.parent.setBuildEnabled(False)
 		self.InputTextPad.setReadOnly(True)
 		self.connect(self.InputTextPad, SIGNAL("returnPressed()"), self.inputwait)
 
@@ -276,6 +290,7 @@ class SWCompiler(QMainWindow, UI_MainWindow):
 		QMainWindow.__init__(self)
 		UI_MainWindow.__init__(self)
 		self.setupUi(self)
+		self.runDlg = None
 		self.highlighter = SWHighlighter(self.codeTextEdit.document())
 		self.initUI()
 
@@ -294,7 +309,6 @@ class SWCompiler(QMainWindow, UI_MainWindow):
 		self.errorMsgTable.setColumnWidth(2, 595)
 		for idx in range(self.errorMsgTable.columnCount()):
 			headItem = self.errorMsgTable.horizontalHeaderItem(idx)
-			headItem.setBackgroundColor(QColor(37, 59, 118))
 			headItem.setForeground(QColor(0, 0, 0))
 
 	def fileInit(self):
@@ -323,8 +337,6 @@ class SWCompiler(QMainWindow, UI_MainWindow):
 		'''
 			Preparation for build&run or debug a processing
 		'''
-		self.setBuildEnabled(False)
-
 		text = self.codeTextEdit.toPlainText()
 		text = unicode(text.toUtf8(), 'utf-8', 'ignore')
 		if text == "":
@@ -424,6 +436,8 @@ class SWCompiler(QMainWindow, UI_MainWindow):
 				self.workPathLabel.setText(self.filepath)
 
 	def closeEvent(self, event):
+		if self.runDlg:
+			self.runDlg.close()
 		cleanfiles()
 
 if __name__ == "__main__":

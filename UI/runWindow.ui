@@ -225,6 +225,9 @@ font: 14pt &quot;Consolas&quot;;</string>
    <property name="text">
     <string>stepnext</string>
    </property>
+   <property name="shortcut">
+    <string>F7</string>
+   </property>
   </action>
   <action name="actionStepover">
    <property name="icon">
@@ -233,6 +236,9 @@ font: 14pt &quot;Consolas&quot;;</string>
    </property>
    <property name="text">
     <string>stepover</string>
+   </property>
+   <property name="shortcut">
+    <string>F4</string>
    </property>
   </action>
   <action name="actionStepout">
@@ -243,6 +249,9 @@ font: 14pt &quot;Consolas&quot;;</string>
    <property name="text">
     <string>stepout</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+F7</string>
+   </property>
   </action>
   <action name="actionStop">
    <property name="icon">
@@ -251,6 +260,9 @@ font: 14pt &quot;Consolas&quot;;</string>
    </property>
    <property name="text">
     <string>stop</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F8</string>
    </property>
   </action>
  </widget>

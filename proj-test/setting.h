@@ -3,8 +3,8 @@
 
 #include <stdbool.h>
 
-#define N_SYM 57		/* symbol number */
-#define N_RW 13			/* reversed words number */
+#define N_SYM 60		/* symbol number */
+#define N_RW 16			/* reversed words number */
 #define N_FCT 11		/* fct code number */
 #define LEN_NUM 14		/* max length of a number */
 #define LEN_ID 20		/* max length of an identity */
@@ -18,18 +18,18 @@
 
 /* symbols dict */
 typedef enum SYMBOL {
-    nul,		ident,		number,     varsym,     letsym,
-    funcsym,    plus,		minus,      times,		slash,
-    mod,        autoincre,  autodecre,  andsym,     orsym,
-    notsym,     bitand,     bitor,      bitnot,     xor,
-    shl,        shr,        becomes,    plusbe,     minusbe,
-    timesbe,    slashbe,    modbe,      andbe,      orbe,
-    xorbe,      shlbe,      shrbe,      eql,        neq,
-    lss,        leq,		gtr,        geq,        lparen,
-    rparen,     lbrace,		rbrace,     range,      halfrange,
-    semicolon,  period,     ifsym,      elsesym,	forsym,
-    insym,      whilesym,   repeatsym,  readsym,	printsym,
-    callsym,    returnsym,
+    nul,        ident,      number,     varsym,     letsym,
+    funcsym,    intsym,     boolsym,    charsym,    plus,
+    minus,      times,      slash,      mod,        autoincre,
+    autodecre,  andsym,     orsym,      notsym,     bitand,
+    bitor,      bitnot,     xor,        shl,        shr,
+    becomes,    plusbe,     minusbe,    timesbe,    slashbe,
+    modbe,      andbe,      orbe,       xorbe,      shlbe,
+    shrbe,      eql,        neq,        lss,        leq,
+    gtr,        geq,        lparen,     rparen,     lbrace,
+    rbrace,     range,      halfrange,  semicolon,  period,
+    ifsym,      elsesym,    forsym,     insym,      whilesym,
+    repeatsym,  readsym,    printsym,   callsym,    returnsym,
 }SYMBOL;
 
 /* identity types */
@@ -39,6 +39,12 @@ typedef enum OBJECT {
 	function,
 }OBJECT;
 
+typedef enum DATATYPE {
+    inttype,
+    chartype,
+    booltype,
+}
+
 /* fct code types */
 typedef enum FCT {
 	lit,	opr,	lod,
@@ -47,7 +53,7 @@ typedef enum FCT {
     in,     out,
 }FCT;
 
-char ERR_TP[80][80];          /* error type dictionary */
+char ERR_TP[80][80];            /* error type dictionary */
 char word[N_RW][LEN_ID];		/* reversed words' dict */
 char mnemonic[N_FCT][5];		/* fct code dict */
 enum SYMBOL ssym[256];			/* value of single-letter-type symbol */

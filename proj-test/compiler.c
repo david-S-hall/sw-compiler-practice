@@ -719,8 +719,12 @@ void statement(bool* fsys, int* ptx, int lev)
                 if (i == 0) error(11);  // identity in read() still not declared
                 else
                 {
-                    gen(in, 0, 0);    // generate input instruction
-                    gen(sto, lev-table[i].level, table[i].adr); // send stack top into variable
+                    if (table[i].kind == variable)
+                    {
+                        gen(in, 0, 0);    // generate input instruction
+                        gen(sto, lev-table[i].level, table[i].adr); // send stack top into variable
+                    }
+                    else error(25);
                 }
                 getsym();
             }

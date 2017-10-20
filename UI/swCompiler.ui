@@ -14,9 +14,7 @@
    <string>sw-compiler</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">border-color: rgba(40, 40, 40, 150);
-background-color: rgb(125, 125, 125);
-color: rgb(225, 225, 225);</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="font">
@@ -25,7 +23,7 @@ color: rgb(225, 225, 225);</string>
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: rgb(91, 91, 91);</string>
+    <string notr="true"/>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
@@ -43,24 +41,22 @@ color: rgb(225, 225, 225);</string>
        </sizepolicy>
       </property>
       <property name="styleSheet">
-       <string notr="true">border-color: rgba(0, 0, 0, 0);
-border-top-color: rgb(40, 43, 55);</string>
+       <string notr="true"/>
       </property>
       <property name="widgetResizable">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="codeScrollAreas">
+      <widget class="QWidget" name="codeScrollArea">
        <property name="geometry">
         <rect>
          <x>0</x>
          <y>0</y>
          <width>770</width>
-         <height>352</height>
+         <height>353</height>
         </rect>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(12, 16, 33);
-selection-background-color: rgb(24, 37, 75);</string>
+        <string notr="true"/>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <property name="spacing">
@@ -104,6 +100,12 @@ selection-background-color: rgb(24, 37, 75);</string>
           <property name="plainText">
            <string/>
           </property>
+          <property name="tabStopWidth">
+           <number>35</number>
+          </property>
+          <property name="backgroundVisible">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
        </layout>
@@ -134,9 +136,7 @@ selection-background-color: rgb(24, 37, 75);</string>
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(84, 84, 84);
-color: rgb(255, 255, 255);
-border-bottom-color: rgb(91, 91, 91);</string>
+       <string notr="true"/>
       </property>
       <property name="tabPosition">
        <enum>QTabWidget::North</enum>
@@ -164,10 +164,7 @@ border-bottom-color: rgb(91, 91, 91);</string>
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">border-left-color: rgb(12, 16, 33);
-border-right-color: rgb(12, 16, 33);
-border-bottom-color: rgb(84, 84, 84);
-border-top-color: rgb(91, 91, 91);</string>
+        <string notr="true"/>
        </property>
        <attribute name="title">
         <string>Error Msg</string>
@@ -193,16 +190,14 @@ border-top-color: rgb(91, 91, 91);</string>
           <property name="font">
            <font>
             <family>Consolas</family>
-            <pointsize>11</pointsize>
+            <pointsize>10</pointsize>
            </font>
           </property>
           <property name="autoFillBackground">
            <bool>true</bool>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: rgb(255, 255, 255);
-background-color: rgb(12, 16, 33);
-selection-background-color: rgb(24, 37, 75);</string>
+           <string notr="true"/>
           </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
@@ -217,7 +212,10 @@ selection-background-color: rgb(24, 37, 75);</string>
            <number>100</number>
           </property>
           <property name="editTriggers">
-           <set>QAbstractItemView::NoEditTriggers</set>
+           <set>QAbstractItemView::SelectedClicked</set>
+          </property>
+          <property name="dragDropOverwriteMode">
+           <bool>false</bool>
           </property>
           <property name="selectionBehavior">
            <enum>QAbstractItemView::SelectRows</enum>
@@ -229,6 +227,9 @@ selection-background-color: rgb(24, 37, 75);</string>
            <enum>Qt::NoPen</enum>
           </property>
           <attribute name="horizontalHeaderHighlightSections">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="horizontalHeaderStretchLastSection">
            <bool>true</bool>
           </attribute>
           <attribute name="verticalHeaderHighlightSections">
@@ -257,7 +258,7 @@ selection-background-color: rgb(24, 37, 75);</string>
      </spacer>
     </item>
     <item>
-     <widget class="QFrame" name="frame">
+     <widget class="QFrame" name="statusBarFrame">
       <property name="font">
        <font>
         <family>Microsoft YaHei UI Light</family>
@@ -265,8 +266,7 @@ selection-background-color: rgb(24, 37, 75);</string>
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(85, 85, 85);
-border-top-color: rgb(125, 125, 125);</string>
+       <string notr="true"/>
       </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -322,7 +322,7 @@ border-top-color: rgb(125, 125, 125);</string>
     <enum>Qt::LeftToRight</enum>
    </property>
    <property name="autoFillBackground">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="movable">
     <bool>false</bool>
@@ -351,7 +351,10 @@ border-top-color: rgb(125, 125, 125);</string>
      <normalon>New.png</normalon>icons/New.png</iconset>
    </property>
    <property name="text">
-    <string>New</string>
+    <string>&amp;New</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
   <action name="actionOpen">
@@ -363,6 +366,9 @@ border-top-color: rgb(125, 125, 125);</string>
    <property name="text">
     <string>&amp;Open</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actionBuildAndRun">
    <property name="icon">
@@ -371,6 +377,9 @@ border-top-color: rgb(125, 125, 125);</string>
    </property>
    <property name="text">
     <string>build and run</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
    </property>
   </action>
   <action name="actionDebug">
@@ -381,6 +390,9 @@ border-top-color: rgb(125, 125, 125);</string>
    <property name="text">
     <string>debug/continue</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+B</string>
+   </property>
   </action>
   <action name="actionSave">
    <property name="icon">
@@ -390,6 +402,9 @@ border-top-color: rgb(125, 125, 125);</string>
    </property>
    <property name="text">
     <string>&amp;Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

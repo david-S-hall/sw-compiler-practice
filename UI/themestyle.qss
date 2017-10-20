@@ -1,29 +1,85 @@
-QScrollBar:vertical
+SWCompiler
+{
+	border-color: #282828;
+	background-color: #787878;
+	color: #DFDFDF;
+}
+SWCompiler *
+{
+	color: #FDFDFD;
+}
+SWCompiler QToolBar
+{
+	background-color: rgba(89,89,89,80%);
+	border-color: #707070;
+}
+SWCompiler QToolBar *
+{
+	alternate-background-color: #282828;
+}
+SWCompiler #centralwidget
+{
+	border-top-color: #6D6D6D;
+	background-color: #5B5B5B;
+}
+SWCompiler #codeScroll *
+{
+	background-color: #808080;
+	selection-background-color: #686578;
+}
+SWCompiler #statusBarFrame
+{
+	background-color: #555555;
+	border-top-color: #7D7D7D;
+}
+SWCompiler QTabWidget
+{
+	background-color: #545454;
+	border-bottom-color: #5B5B5B;
+}
+SWCompiler QTabWidget > QWidget
+{
+	background-color: #545454;
+	border-left-color: #808080;
+	border-right-color: #808080;
+	border-bottom-color: #545454;
+	border-top-color: #5B5B5B;
+}
+SWCompiler #errorMsgTable
+{
+	background-color: #808080;
+	selection-background-color: #686578;
+}
+
+
+
+
+QScrollBar
 {
     width:10px;
     background:rgb(37,37,37);
     padding:8px,8px,8px,8px;
 }
-QScrollBar::handle:vertical
+QScrollBar::handle
 {
     width:8px;
     background:rgb(73,73,73);
     border-radius:5px;
     min-height:20;
 }
-QScrollBar::handle:vertical:hover
+QScrollBar::handle:hover
 {
     background:rgb(75,75,75);
 }
-QScrollBar::add-line:vertical
+QScrollBar::add-line
 {
     background:rgba(0,0,0,0%)
 }
-QScrollBar::sub-line:vertical
+QScrollBar::sub-line
 {
     background:rgba(0,0,0,0%);
 }
-QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical
+QScrollBar::add-page,QScrollBar::sub-page
 {
     background:rgb(39,39,39);
 }
