@@ -4,8 +4,9 @@ import codecs
 import threading
 from PyQt4 import QtGui, QtCore
 from PyQt4 import uic
-from PyQt4.QtGui import QMainWindow, QApplication, QColor, QAbstractItemView,\
-		QSyntaxHighlighter, QTextCharFormat, QFileDialog, QTableWidgetItem
+from PyQt4.QtGui import QMainWindow, QApplication, QColor, QFont,\
+	QAbstractItemView, QSyntaxHighlighter, QTextCharFormat,\
+	QFileDialog, QTableWidgetItem
 from PyQt4.QtCore import Qt, QRegExp, SIGNAL, QFile
 from utils import Instruction, Interpret
 
@@ -111,10 +112,10 @@ class SWHighlighter(QSyntaxHighlighter):
 					"for",		"in",	"while",	"repeat",	"read",
 					"print",	"call",	"return",	"break",	"continue"]
 
-		BUILDINS = ["int", "char", "bool"]
+		BUILDINS = ["int", "char", "bool", "true", "false"]
 
 		OPERATORS = ["\+", "-", "\*", "/", "%", "&", "\|", "~", "\^", "\!",
-					 "<", ">", "="]
+					 "<", ">", "=", "\.\."]
 
 		SWHighlighter.Rules.append((QRegExp(
 			"|".join([r"\b%s\b" % keyword for keyword in KEYWORDS])),
@@ -129,7 +130,7 @@ class SWHighlighter(QSyntaxHighlighter):
 			r"\b[0-9]+\b"),
 			"number"))
 		SWHighlighter.Rules.append((QRegExp(
-			r"/\*(.|\n|\r)*\*/"),
+			r"/\*.*\*/"),
 			"comment"))
 		
 	@staticmethod
@@ -147,6 +148,8 @@ class SWHighlighter(QSyntaxHighlighter):
 			format.setForeground(QColor(fcolor))
 			if bcolor is not None:
 				format.setBackground(QColor(bcolor))
+			if name in ("buildin"):
+				format.setFontWeight(QFont.Bold)
 			if name == "comment":
 				format.setFontItalic(True)
 			SWHighlighter.Formats[name] = format

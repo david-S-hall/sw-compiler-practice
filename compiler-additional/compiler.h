@@ -4,11 +4,13 @@
 #include <stdio.h>
 #include "setting.h"
 
+#undef __DEBUG__
 
 typedef struct TableStruct
 {
     char name[LEN_ID];
     OBJECT kind;
+    DATATYPE type;
     int val;
     int level;
     int adr;
@@ -35,6 +37,9 @@ char a[LEN_ID+1];		// symbol buffer
 int line_num;           // counter for read line
 int err_num;			// counter for known errors
 int fend_tag;           // tag of read the end of file
+int rtnlist[BOUND_ADR]; // list of fct code need return
+int rtn_num;            // unbackfilled fct code counter
+int rtn_type;           // type of return type
 
 TableStruct table[SIZE_TB];
 Instruction code[MAX_CX];
@@ -60,7 +65,7 @@ void init();
 void error(int n);
 void getsym();
 void getch();
-void gen(enum FCT x, int y, int z);
+void gen(FCT x, int y, int z);
 void test(bool* s1, bool* s2, int n);
 int inset(int e, bool* s);
 int addset(bool* sr, bool* s1, bool* s2, int n);
@@ -70,10 +75,11 @@ int mulset(bool* sr, bool* s1, bool* s2, int n);
 void parsing();
 void processing();
 void interpret();
+void debug();
 void listcode(int cx0);
 void listall();
 void problem(int lev, int tx, bool* fsys);
-void declaration(enum OBJECT tp, int* ptx, int lev, int* pdx);
+void declaration(OBJECT tp, int* ptx, int lev, int* pdx);
 void statement(bool* fsys, int* ptx, int lev);
 #define expression(fsys, ptx, lev) 	cond_or(fsys, ptx, lev)
 void cond_or(bool* fsys, int* ptx, int lev);
@@ -88,7 +94,7 @@ void add_expr(bool* fsys, int* ptx, int lev);
 void term(bool* fsys, int* ptx, int lev);
 void factor(bool* fsys, int* ptx, int lev);
 
-void enter(enum OBJECT k, int* ptx, int lev, int* pdx);
+void enter(OBJECT k, int* ptx, int lev, int* pdx);
 int position(char* idt, int tx);
 int base(int l, int* s, int b);
 

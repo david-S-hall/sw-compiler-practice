@@ -20,41 +20,49 @@ void init_setting()
 	ssym['{'] = lbrace;
 	ssym['}'] = rbrace;
 	ssym['='] = becomes;
+	ssym[':'] = colon;
 	ssym[';'] = semicolon;
 	ssym['$'] = period;
 
 	/* reversed word symbol */
-	wsym[0] = callsym;
-	wsym[1] = elsesym;
-	wsym[2] = forsym;
-	wsym[3] = funcsym;
-    wsym[4] = ifsym;
-	wsym[5] = insym;
-	wsym[6] = letsym;
-	wsym[7] = printsym;
-	wsym[8] = readsym;
-	wsym[9] = repeatsym;
-	wsym[10] = returnsym;
-	wsym[11] = varsym;
-    wsym[12] = whilesym;
+	wsym[0] = boolsym;
+	wsym[1] = callsym;
+	wsym[2] = charsym;
+	wsym[3] = elsesym;
+	wsym[4] = falsesym;
+	wsym[5] = forsym;
+	wsym[6] = funcsym;
+    wsym[7] = ifsym;
+	wsym[8] = insym;
+	wsym[9] = intsym;
+	wsym[10] = letsym;
+	wsym[11] = printsym;
+	wsym[12] = readsym;
+	wsym[13] = repeatsym;
+	wsym[14] = returnsym;
+	wsym[15] = truesym;
+	wsym[16] = varsym;
+    wsym[17] = whilesym;
 
 	/* reversed words dict */
 	strcpy(word[0], "bool");
 	strcpy(word[1], "call");
 	strcpy(word[2], "char");
 	strcpy(word[3], "else");
-	strcpy(word[4], "for");
-	strcpy(word[5], "func");
-	strcpy(word[6], "if");
-	strcpy(word[7], "in");
-	strcpy(word[8], "int");
-	strcpy(word[9], "let");
-	strcpy(word[10], "print");
-	strcpy(word[11], "read");
-	strcpy(word[12], "repeat");
-	strcpy(word[13], "return");
-	strcpy(word[14], "var");
-	strcpy(word[15], "while");
+	strcpy(word[4], "false");
+	strcpy(word[5], "for");
+	strcpy(word[6], "func");
+	strcpy(word[7], "if");
+	strcpy(word[8], "in");
+	strcpy(word[9], "int");
+	strcpy(word[10], "let");
+	strcpy(word[11], "print");
+	strcpy(word[12], "read");
+	strcpy(word[13], "repeat");
+	strcpy(word[14], "return");
+	strcpy(word[15], "true");
+	strcpy(word[16], "var");
+	strcpy(word[17], "while");
 
 	/* fct code dict */
 	strcpy(mnemonic[lit], "lit");
@@ -83,6 +91,7 @@ void init_setting()
 	statbegsys[autoincre] = true;
 	statbegsys[autodecre] = true;
 	statbegsys[repeatsym] = true;
+	statbegsys[returnsym] = true;
 
 	facbegsys[ident] = true;
 	facbegsys[number] = true;
@@ -90,6 +99,8 @@ void init_setting()
 	facbegsys[autoincre] = true;
 	facbegsys[autodecre] = true;
 	facbegsys[notsym] = true;
+	facbegsys[truesym] = true;
+	facbegsys[falsesym] = true;
 }
 
 void init_errors()
@@ -106,6 +117,8 @@ void init_errors()
     strcpy(ERR_TP[14], "invalid call statement without function identity");
     strcpy(ERR_TP[15], "a declaration of constant type must initialize with a value");
     strcpy(ERR_TP[16], "a non-variable type instance cannot be auto-increment or auto-decrement");
+    strcpy(ERR_TP[17], "a datatype token is needed after ':' for a data declaration");
+    strcpy(ERR_TP[18], "a datatype token is needed after '->' for a function declaration to return");
     strcpy(ERR_TP[19], "statement ending with a wrong follow symbol");
     strcpy(ERR_TP[20], "a relation operator is lost");
     strcpy(ERR_TP[21], "invalid conversation for a function identity");
@@ -127,6 +140,8 @@ void init_errors()
     strcpy(ERR_TP[45], "a while symbol is need for repeat statement");
     strcpy(ERR_TP[46], "a wrong follow symbol for logic or judgement");
     strcpy(ERR_TP[47], "a wrong follow symbol for logic and judgement");
+    strcpy(ERR_TP[48], "the function needs a return statement");
+    strcpy(ERR_TP[49], "a value must return for the function");
     strcpy(ERR_TP[60], "program is too long --end");
     strcpy(ERR_TP[61], "Displacement address is too big --end");
 }
@@ -136,13 +151,14 @@ void init_proc()
     fend_tag = 0;
 	err_num = 0;
 	line_num = 0;
+	rtn_type = pretermit;
 	cc = ll = cx = 0;
 	ch = ' ';
 
 	tableswitch = 1;
 	listswitch = 1;
     #ifdef __DEBUG__
-	fresult = fopen("fresult.tmp", "w");
+	fresult = fopen("fresult.txt", "w");
     ftable = fopen("ftable.txt", "w");
     foutput = fopen("foutput.txt", "w");
     #endif

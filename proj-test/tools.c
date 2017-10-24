@@ -14,6 +14,7 @@ void enter(OBJECT k, int* ptx, int lev, int* pdx)
 	(*ptx)++;
 	strcpy(table[(*ptx)].name, id);
 	table[(*ptx)].kind = k;
+	table[(*ptx)].type = pretermit;
 	switch(k)
 	{
         case constant:
@@ -120,6 +121,7 @@ void interpret()
     int t = 0;      /* pointer of stack top */
     Instruction i;  /* store current code */
     int s[SIZE_STACK];  /* stack */
+    int reg[16];    /* register */
 
     s[0] = 0;
     s[1] = 0;
@@ -145,7 +147,7 @@ void interpret()
                     case 1: /* inverse of stack top */
                         s[t] = -s[t];
                         break;
-                    case 2: /* push stack top and second sum into stack */
+                    case 2: /* stack top and second sum */
                         t = t - 1;
                         s[t] = s[t] + s[t + 1];
                         break;
@@ -281,14 +283,30 @@ void interpret()
                     p = i.a;
                 t = t - 1;
                 break;
-            case in:	/* read an input into stack top */
+            case in:	/* read an data into stack top */
                 t = t + 1;
-                printf(">>>\t");
-                scanf("%d", &(s[t]));
+                switch (i.a)
+                {
+                    case 0:     // stdin
+                        printf(">>>\t");
+                        scanf("%d", &(s[t]));
+                        break;
+                    default:
+                        s[t] = reg[i.a];
+                        break;
+                }
                 break;
-            case out:	/* output stack top */
-                printf("%d\n", s[t]);
-                fprintf(fresult, "%d\n", s[t]);
+            case out:	/* write an data out stack top */
+                switch (i.a)
+                {
+                    case 0:     //stdout
+                        printf("%d\n", s[t]);
+                        fprintf(fresult, "%d\n", s[t]);
+                        break;
+                    default:
+                        reg[i.a] = s[t];
+                        break;
+                }
 				t = t - 1;
 				break;
         }

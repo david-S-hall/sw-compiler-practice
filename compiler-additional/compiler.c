@@ -2,24 +2,22 @@
 #include <ctype.h>
 #include "compiler.h"
 
-#define __DEBUG__
-
-#ifdef __DEBUG__
-
-char symNames[N_SYM][15] =
+char sym_name[N_SYM][20] =
 {
-    "null",     "identity", "number",   "plus",     "minus",
-    "times",    "slash",    "mod",      "plusbe",   "minusbe",
-    "timesbe",  "slashbe",  "modbe",    "becomes",  "eql",
-    "neq",      "lss",      "leq",      "gtr",      "geq",
-    "lparen",   "rparen",   "lbrace",   "rbrace",   "range",
-    "semicolon","ifsym",    "elsesym",  "forsym",   "insym",
-    "whilesym", "readsym", "printsym", "callsym", "varsym", "funcsym",
-    "period", "autoincre", "autodecre", "returnsym", "repeatsym",
-     "andsym", "orsym", "notsym"
+    "nul",        "ident",      "number",     "varsym",     "letsym",
+    "funcsym",    "intsym",     "boolsym",    "charsym",    "plus",
+    "minus",      "times",      "slash",      "mod",        "autoincre",
+    "autodecre",  "andsym",     "orsym",      "notsym",     "bitand",
+    "bitor",      "bitnot",     "xor",        "shl",        "shr",
+    "becomes",    "plusbe",     "minusbe",    "timesbe",    "slashbe",
+    "modbe",      "andbe",      "orbe",       "xorbe",      "shlbe",
+    "shrbe",      "eql",        "neq",        "lss",        "leq",
+    "gtr",        "geq",        "pointer",    "colon",      "semicolon",
+    "period",     "lparen",     "rparen",     "lbrace",     "rbrace",
+    "range",      "halfrange",  "ifsym",      "elsesym",    "forsym",
+    "insym",      "whilesym",   "repeatsym",  "readsym",    "printsym",
+    "callsym",    "returnsym",  "truesym",    "falsesym"
 };
-
-#endif
 
 void init()
 {
@@ -45,7 +43,9 @@ void parsing()
 
 void processing()
 {
-    fprintf(ferr, "=== Build finished: ");
+    fprintf(ferr, "],\n");
+    fprintf(ferr, "\"errNum\":%d,\n", err_num);
+    fprintf(ferr, "\"total\":\"=== Build finished: ");
     if (err_num)
     {
         fprintf(ferr, "%d error(s)", err_num);
@@ -53,23 +53,27 @@ void processing()
         {
             fprintf(ferr, ", more errors are collapsed");
         }
-        fprintf(ferr, " ===\n");
+        fprintf(ferr, " ===\"");
+        fprintf(ferr, "\n}\n");
     }
     else
     {
-        fprintf(ferr, "Parsing success ===\n");
+        fprintf(ferr, "Parsing success ===\"");
+        fprintf(ferr, "\n}\n");
 
         listall();
-        fclose(fcode);
-
+        #ifdef __DEBUG__
         interpret();
-        fclose(fresult);
+        #endif
     }
-
-    fclose(fin);
     fclose(ferr);
-    fclose(ftable);
+    fclose(fcode);
+    fclose(fin);
+    #ifdef __DEBUG__
     fclose(foutput);
+    fclose(ftable);
+    fclose(fresult);
+    #endif
 }
 
 void error(int n)
@@ -80,8 +84,8 @@ void error(int n)
         processing();
         return;
     }
-
-    fprintf(ferr, "# line %d, type %d: %s\n", line_num, n, ERR_TP[n]);
+    if (err_num > 1) fprintf(ferr, err_num > 1 ? ",\n" : "\n");
+    fprintf(ferr, "{\"typeno\":\"%d\", \"line\":\"%d\", \"message\":\"%s\"}", n, line_num, ERR_TP[n]);
 }
 
 void getch()
@@ -106,12 +110,19 @@ void getch()
 			if (EOF == fscanf(fin, "%c", &ch))
 			{
 				line[ll] = 0;
+				if (ll == 0)
+                {
+                    fend_tag = 1;
+                    ch = '$';
+                    return;
+                }
 				break;
 			}
             //printf("%c", ch);
-			fprintf(foutput, "%c", ch);
+            fprintf(foutput, "%c", ch);
 			line[ll++] = ch;
 		}
+		line[ll] = 0;
 	}
 	ch = line[cc];
 	cc++;
@@ -119,12 +130,15 @@ void getch()
 
 void getsym()
 {
-    if (sym == period)
+    if (fend_tag)
+    {
+        sym = period;
         return;
+    }
 
 	int i, j, k;
 
-	while (ch == ' ' || ch == 10 || ch == 9)
+	while (ch == ' ' || ch == 9 || ch == 10 || ch == 13)
 		getch();
 	if (isalpha(ch))    // a reversed word or identity begins with alpha
 	{
@@ -282,6 +296,11 @@ void getsym()
             sym = minusbe;
             getch();
         }
+        else if (ch == '>')
+        {
+            sym = pointer;
+            getch();
+        }
         else
             sym = minus;
     }
@@ -401,6 +420,7 @@ void getsym()
         if (sym != period)
             getch();
     }
+    fprintf(fresult,"%s %s\n", sym_name[sym], line);
 }
 
 /*
@@ -430,12 +450,75 @@ void problem(int lev, int tx, bool* fsys)
 
     /* declaration list parsing */
     do {
-        /* variable declaration parsing */
-        while (sym == varsym)
+        /* data declaration parsing */
+        while (sym == varsym || sym == letsym)
         {
-            getsym();
-            declaration(variable, &tx, lev, &dx);
+            if (sym == varsym)
+            {
+                getsym();
+                if (sym == ident)
+                    declaration(variable, &tx, lev, &dx);
+                else error(4);
 
+                if (sym == colon)
+                {
+                    getsym();
+                    switch(sym)
+                    {
+                        case intsym:
+                            getsym();
+                            table[tx].type = inttype;
+                            break;
+                        case boolsym:
+                            getsym();
+                            table[tx].type = booltype;
+                            break;
+                        case charsym:
+                            getsym();
+                            table[tx].type = chartype;
+                            break;
+                        default:
+                            error(17);  // lack datatype after ':'
+                            break;
+                    }
+                }
+            }
+            else if(sym == letsym)
+            {
+                getsym();
+                if (sym == ident) getsym();
+                else error(4);
+
+                if (sym == colon)
+                {
+                    getsym();
+                    switch(sym)
+                    {
+                        case intsym:
+                            getsym();
+                            table[tx].type = inttype;
+                            break;
+                        case boolsym:
+                            getsym();
+                            table[tx].type = booltype;
+                            break;
+                        case charsym:
+                            getsym();
+                            table[tx].type = chartype;
+                            break;
+                        default:
+                            error(10);  // lack datatype after ':'
+                            break;
+                    }
+                }
+
+                if (sym == becomes) getsym();
+                else error(13);
+
+                if (sym == number)
+                    declaration(constant, &tx, lev, &dx);
+                else error(15);
+            }
             if (sym == semicolon)
                 getsym();
             else error(5);
@@ -452,6 +535,33 @@ void problem(int lev, int tx, bool* fsys)
             else error(36);
             if (sym == rparen) getsym();
             else error(36);
+
+            DATATYPE tp = pretermit;
+            if (sym == pointer)
+            {
+                getsym();
+                switch (sym)
+                {
+                    case intsym:
+                        getsym();
+                        tp = inttype;
+                        break;
+                    case boolsym:
+                        getsym();
+                        tp = booltype;
+                        break;
+                    case charsym:
+                        getsym();
+                        tp = chartype;
+                        break;
+                    default:
+                        error(18);  // lack return datatype after '->'
+                        break;
+                }
+            }
+            table[tx].type = tp;
+            rtn_type = tp;
+
             if (sym == lbrace) getsym();	// processing {
             else error(37);
 
@@ -478,7 +588,7 @@ void problem(int lev, int tx, bool* fsys)
         code[table[tx0].adr].a = cx;
     table[tx0].adr = cx;
     table[tx0].size = dx;
-    #ifdef __DEBUG__
+    #ifdef __TEST__
     cx0 = cx;
     #endif
     gen(ini, 0, dx);
@@ -489,6 +599,10 @@ void problem(int lev, int tx, bool* fsys)
         {
             switch (table[i].kind)
             {
+                case constant:
+					fprintf(ftable, "    %d const %s ", i, table[i].name);
+					fprintf(ftable, "val=%d\n", table[i].val);
+					break;
                 case variable:
                     fprintf(ftable, "    %d var   %s ", i, table[i].name);
                     fprintf(ftable, "lev=%d addr=%d\n", table[i].level, table[i].adr);
@@ -505,11 +619,25 @@ void problem(int lev, int tx, bool* fsys)
     /* statement list parsing */
     memcpy(nxtlev, fsys, sizeof nxtlev);
     nxtlev[semicolon] = true;
+    rtn_num = 0;
     statement(nxtlev, &tx, lev);
+
+    /* backfill return list */
+    if (rtn_type != pretermit)
+    {
+        if (rtn_num == 0)
+            error(48);  // lack return value(s)
+    }
+    int i;
+    for (i = 0; i < rtn_num; ++i)
+    {
+        code[rtnlist[i]].a = cx;
+    }
     gen(opr, 0, 0);
+    rtn_type = pretermit;
     memset(nxtlev, 0, sizeof nxtlev);
     test(fsys, nxtlev, 8);
-    #ifdef __DEBUG__
+    #ifdef __TEST__
     listcode(cx0);
     #endif
 }
@@ -522,15 +650,10 @@ void problem(int lev, int tx, bool* fsys)
  * lev:		symbol is in main block or function body
  * pdx:		relative address for current variable
  */
-void declaration(OBJECT tp, int *ptx, int lev, int* pdx)
+inline void declaration(OBJECT k, int *ptx, int lev, int* pdx)
 {
-	if (sym == ident)
-	{
-		enter(tp, ptx, lev, pdx);
-		getsym();
-	}
-	else
-		error(4);
+	enter(k, ptx, lev, pdx);
+	getsym();
 }
 
 
@@ -546,6 +669,9 @@ void forstatrange(bool* fsys, int* ptx, int lev)
 			{
 			    switch (table[i].kind)
 			    {
+                    case constant:
+                        gen(lit, 0, table[i].val);
+                        break;
                     case variable:
 				        gen(lod, lev-table[i].level, table[i].adr);
 		                break;
@@ -708,11 +834,15 @@ void statement(bool* fsys, int* ptx, int lev)
                     i = position(id, *ptx);
                 else i = 0;
 
-                if (i == 0) error(35);  // identity in read() still not declared
+                if (i == 0) error(11);  // identity in read() still not declared
                 else
                 {
-                    gen(in, 0, 0);    // generate input instruction
-                    gen(sto, lev-table[i].level, table[i].adr); // send stack top into variable
+                    if (table[i].kind == variable)
+                    {
+                        gen(in, 0, 0);    // generate input instruction
+                        gen(sto, lev-table[i].level, table[i].adr); // send stack top into variable
+                    }
+                    else error(25);
                 }
                 getsym();
             }
@@ -929,7 +1059,7 @@ void statement(bool* fsys, int* ptx, int lev)
             else error(45); // lack 'while'
 
             if (sym == lparen) getsym();
-            else error(33);   // lack '('
+            else error(34);   // lack '('
 
             memcpy(nxtlev, fsys, sizeof nxtlev);
             nxtlev[rparen] = true;
@@ -938,6 +1068,23 @@ void statement(bool* fsys, int* ptx, int lev)
 
             if (sym == rparen) getsym();
             else error(34);
+        }
+        else if (sym == returnsym)
+        {
+            getsym();
+            memcpy(nxtlev, facbegsys, sizeof nxtlev);
+            nxtlev[plus] = true;
+            nxtlev[minus] = true;
+            if (inset(sym, nxtlev)){
+                expression(fsys, ptx, lev);
+                gen(out, 0, 1);
+            }
+            else if (rtn_type != pretermit)
+            {
+                error(49);
+            }
+            rtnlist[rtn_num++] = cx;
+            gen(jmp, 0, 0);
         }
         if (sym == semicolon)
             getsym();
@@ -1246,32 +1393,53 @@ void factor(bool* fsys, int* ptx, int lev)
         /* the factor is a identity type */
         else if (sym == ident)
         {
+            int idtp = -1;
             i = position(id, *ptx);
             if (i == 0) error(11);  // a no-declaration identity
             else
             {
-                switch (table[i].kind)
+                getsym();
+                idtp = table[i].kind;
+                if (idtp == constant)
                 {
-                    case variable:
-                        gen(lod, lev-table[i].level, table[i].adr);
-                        break;
-                    case function:
-                        error(21);  // cannot be a function
-                        break;
+                    gen(lit, 0, table[i].val);
+                }
+                else if (idtp == variable)
+                {
+                    gen(lod, lev-table[i].level, table[i].adr);
+                }
+                else if (idtp == function)
+                {
+                    if (table[i].type == pretermit)
+                    {
+                        error(21);  // a none-return type function cannot be a factor
+                    }
+                    else
+                    {
+                        gen(cal, lev-table[i].level, table[i].adr);
+                        gen(in, 0, 1);
+                    }
+                    if (sym == lparen) getsym();	// processing ()
+                    else error(36);
+                    if (sym == rparen) getsym();
+                    else error(36);
                 }
             }
-            getsym();
             /* a post-autoincrement | post-autodecrement variable factor */
             if (sym == autoincre || sym == autodecre)
             {
-                int op = sym == autoincre ? 2 : 3;
-                /* post-autoincrement | post-autodecrement left a value before processing to operate */
-                gen(lod, lev-table[i].level, table[i].adr);
-                /* do variable increment */
-                gen(lit, 0, 1);
-                gen(opr, 0, op);
-                gen(sto, lev-table[i].level, table[i].adr);
-                getsym();
+                if (idtp == variable)
+                {
+                    int op = sym == autoincre ? 2 : 3;
+                    /* post-autoincrement | post-autodecrement left a value before processing to operate */
+                    gen(lod, lev-table[i].level, table[i].adr);
+                    /* do variable increment */
+                    gen(lit, 0, 1);
+                    gen(opr, 0, op);
+                    gen(sto, lev-table[i].level, table[i].adr);
+                    getsym();
+                }
+                else error(16);
             }
         }
         /* a pre-autoincrement | pre-autodecrement variable factor */
@@ -1297,6 +1465,7 @@ void factor(bool* fsys, int* ptx, int lev)
                         /* load variable's new value */
                         gen(lod, lev-table[i].level, table[i].adr);
                     }
+                    else error(16);
                 }
             }
         }
@@ -1311,6 +1480,17 @@ void factor(bool* fsys, int* ptx, int lev)
             gen(lit, 0, num);
             getsym();
         }
+        /* the factor is a buildin true or false*/
+        else if (sym == truesym)
+        {
+            gen(lit, 0, 1);
+            getsym();
+        }
+        else if (sym == falsesym)
+        {
+            gen(lit, 0, 0);
+            getsym();
+        }
         /* the factor is a expression */
         else if (sym == lparen)
         {
@@ -1320,7 +1500,7 @@ void factor(bool* fsys, int* ptx, int lev)
             expression(nxtlev, ptx, lev);
             if (sym == rparen)
                 getsym();
-            else error(22); // lack ')'
+            else error(33); // lack ')'
         }
         memset(nxtlev, 0, sizeof nxtlev);
         nxtlev[lparen] = true;

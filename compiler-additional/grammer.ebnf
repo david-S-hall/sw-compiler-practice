@@ -2,22 +2,22 @@ problem = decl_list stat_list.
 
 decl_list = var_decl_list func_decl_list.
 var_decl_list = {(var_decl | const_decl) ";"}.
-var_decl = "var" ident.
-const_decl = "let" ident "=" number.
-func_decl_list = {"func" ident "(" ")" "{" func_body "}"}.
+var_decl = "var" ident[":" data_type].
+const_decl = "let" ident[":" data_type] "=" number.
+func_decl_list = {"func" ident "(" ")" ["->" data_type] "{" func_body "}"}.
 func_body = var_decl_list stat_list.
 
 stat_list = {stat ";"}.
-stat = if_stat | while_stat | read_stat | print_stat | assign_stat | for_stat | call_stat | repeat_stat.
+stat = if_stat | while_stat | read_stat | print_stat | assign_stat | for_stat | call_stat | repeat_stat | return_stat.
 if_stat = "if" expr "{" stat_list "}" ["else" "{" stat_list "}"].
 while_stat = "while" expr "{" stat_list "}".
 read_stat = "read" "(" ident ")".
 print_stat = "print" "(" expr ")".
-assign_stat = ident ("=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | "<<=" | ">>=" )
-	 expr | ("++" | "--") ident | ident ("++" | "--").
+assign_stat = ident assign_op expr | ("++" | "--") ident | ident ("++" | "--").
 for_stat = "for" ident "in" (ident | number) ("..." | "..<") (ident | number) "{" stat_list "}".
 call_stat = "call" ident "(" ")".
 repeat_stat = "repeat" "{" stat_list "}" "while" "(" expr ")".
+return_stat = "return" [expr].
 
 expr = cond_or.
 cond_or = cond_and {"||" cond_and}.
@@ -30,4 +30,8 @@ rel_expr = shift_expr {("<" | ">" | "<=" | ">=") shift_expr}.
 shift_expr = add_expr {("<<" | ">>") add_expr}.
 add_expr = ["+" | "-"] term {("+" | "-") term}.
 term = factor {("*" | "/" | "%") factor} | .
-factor = ("++" | "--") ident | ident ["++" | "--"] | number | "(" expr ")" | ("~" | "!") factor.
+factor = ("++" | "--") ident | ident ["++" | "--"] | ident "(" ")" |
+		"true" | "false" | number | "(" expr ")" | ("~" | "!") factor.
+
+assign_op = ("=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | "<<=" | ">>=" )
+data_type = ("int" | "bool" | "char")

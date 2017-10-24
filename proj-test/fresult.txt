@@ -1,0 +1,40 @@
+funcsym func f1()-> int{
+
+ident func f1()-> int{
+
+lparen func f1()-> int{
+
+rparen func f1()-> int{
+
+pointer func f1()-> int{
+
+intsym func f1()-> int{
+
+lbrace func f1()-> int{
+
+returnsym 	return 1;
+
+number 	return 1;
+
+semicolon 	return 1;
+
+rbrace }
+
+callsym call f1();
+
+ident call f1();
+
+lparen call f1();
+
+rparen call f1();
+
+semicolon call f1();
+
+printsym print(f1());
+lparen print(f1());
+ident print(f1());
+lparen print(f1());
+rparen print(f1());
+rparen print(f1());
+semicolon print(f1());
+1

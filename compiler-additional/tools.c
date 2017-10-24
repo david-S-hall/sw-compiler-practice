@@ -1,4 +1,5 @@
 #include "compiler.h"
+#include <string.h>
 
 /*
  * add new to symbol table
@@ -13,8 +14,17 @@ void enter(OBJECT k, int* ptx, int lev, int* pdx)
 	(*ptx)++;
 	strcpy(table[(*ptx)].name, id);
 	table[(*ptx)].kind = k;
+	table[(*ptx)].type = pretermit;
 	switch(k)
 	{
+        case constant:
+            if (num > BOUND_ADR)
+            {
+                error(31);      // out of range
+                num = 0;
+            }
+            table[(*ptx)].val = num;
+            break;
 		case variable:
 			table[(*ptx)].level = lev;
 			table[(*ptx)].adr = (*pdx);
@@ -111,6 +121,7 @@ void interpret()
     int t = 0;      /* pointer of stack top */
     Instruction i;  /* store current code */
     int s[SIZE_STACK];  /* stack */
+    int reg[16];    /* register */
 
     s[0] = 0;
     s[1] = 0;
@@ -136,7 +147,7 @@ void interpret()
                     case 1: /* inverse of stack top */
                         s[t] = -s[t];
                         break;
-                    case 2: /* push stack top and second sum into stack */
+                    case 2: /* stack top and second sum */
                         t = t - 1;
                         s[t] = s[t] + s[t + 1];
                         break;
@@ -272,23 +283,37 @@ void interpret()
                     p = i.a;
                 t = t - 1;
                 break;
-            case in:	/* read an input into stack top */
+            case in:	/* read an data into stack top */
                 t = t + 1;
-                printf("Enter the variable:\n");
-                scanf("%d", &(s[t]));
-                //fprintf(fresult, "%d\n", s[t]);
+                switch (i.a)
+                {
+                    case 0:     // stdin
+                        printf(">>>\t");
+                        scanf("%d", &(s[t]));
+                        break;
+                    default:
+                        s[t] = reg[i.a];
+                        break;
+                }
                 break;
-            case out:	/* output stack top */
-                printf("%d\n", s[t]);
-                fprintf(fresult, "%d", s[t]);
+            case out:	/* write an data out stack top */
+                switch (i.a)
+                {
+                    case 0:     //stdout
+                        printf("%d\n", s[t]);
+                        fprintf(fresult, "%d\n", s[t]);
+                        break;
+                    default:
+                        reg[i.a] = s[t];
+                        break;
+                }
 				t = t - 1;
 				break;
         }
     } while (p != 0);
 }
 
-
-
+#ifdef __DEBUG__
 /*
  * output code list
  */
@@ -312,7 +337,25 @@ void listall()
 {
     if(listswitch)
     {
+        fprintf(fcode, "{\"codes\":[\n");
         for (int i = 0; i < cx; ++i)
+        {
+            // printf("%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
+            fprintf(fcode,"%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
+        }
+        fprintf(fcode, "]}\n");
+    }
+}
+#else
+/*
+ * output code list
+ */
+void listcode(int cx0)
+{
+    if(listswitch)
+    {
+        puts("");
+        for(int i = cx0; i < cx; ++i)
         {
             // printf("%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
             fprintf(fcode,"%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
@@ -320,6 +363,27 @@ void listall()
     }
 }
 
+/*
+ * output all codes
+ */
+void listall()
+{
+    if(listswitch)
+    {
+        fprintf(fcode, "{\"codes\":[\n");
+        for (int i = 0; i < cx; ++i)
+        {
+            // printf("%d %s %d %d\n", i, mnemonic[code[i].f], code[i].l, code[i].a);
+            fprintf(fcode,"{\"no\":\"%d\",\"code\":", i);
+            fprintf(fcode,"{\"f\":\"%s\",\"l\":%d,\"a\":%d}}", mnemonic[code[i].f], code[i].l, code[i].a);
+            if (i != cx-1)
+                fprintf(fcode, ",");
+            fprintf(fcode, "\n");
+        }
+        fprintf(fcode, "]}\n");
+    }
+}
+#endif
 int inset(int e, bool* s)
 {
 	return s[e];

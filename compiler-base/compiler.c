@@ -132,6 +132,11 @@ void getch()
 			if (EOF == fscanf(fin, "%c", &ch))
 			{
 				line[ll] = 0;
+                if (ll == 0)
+                {
+                    ch = '$';
+                    return;
+                }
 				break;
 			}
             //printf("%c", ch);

@@ -847,6 +847,15 @@ void statement(bool* fsys, int* ptx, int lev)
                 if (i == 0) error(35);  // identity in print() still not declared
                 else
                 {
+                    switch (table[i].kind)
+                    {
+                        case variable:
+                            gen(lod, lev-table[i].level, table[i].adr);
+                            break;
+                        case function:
+                            error(21);  // cannot be a function
+                            break;
+                    }
                     gen(opr, 0, 14);    // generate output instruction
                     gen(opr, 0, 15);    // generate line instruction
                 }

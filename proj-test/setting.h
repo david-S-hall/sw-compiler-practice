@@ -3,8 +3,8 @@
 
 #include <stdbool.h>
 
-#define N_SYM 60		/* symbol number */
-#define N_RW 16			/* reversed words number */
+#define N_SYM 64		/* symbol number */
+#define N_RW 18			/* reversed words number */
 #define N_FCT 11		/* fct code number */
 #define LEN_NUM 14		/* max length of a number */
 #define LEN_ID 20		/* max length of an identity */
@@ -26,10 +26,11 @@ typedef enum SYMBOL {
     becomes,    plusbe,     minusbe,    timesbe,    slashbe,
     modbe,      andbe,      orbe,       xorbe,      shlbe,
     shrbe,      eql,        neq,        lss,        leq,
-    gtr,        geq,        lparen,     rparen,     lbrace,
-    rbrace,     range,      halfrange,  semicolon,  period,
-    ifsym,      elsesym,    forsym,     insym,      whilesym,
-    repeatsym,  readsym,    printsym,   callsym,    returnsym,
+    gtr,        geq,        pointer,    colon,      semicolon,
+    period,     lparen,     rparen,     lbrace,     rbrace,
+    range,      halfrange,  ifsym,      elsesym,    forsym,
+    insym,      whilesym,   repeatsym,  readsym,    printsym,
+    callsym,    returnsym,  truesym,    falsesym,
 }SYMBOL;
 
 /* identity types */
@@ -40,10 +41,11 @@ typedef enum OBJECT {
 }OBJECT;
 
 typedef enum DATATYPE {
+    pretermit,
     inttype,
     chartype,
     booltype,
-}
+}DATATYPE;
 
 /* fct code types */
 typedef enum FCT {

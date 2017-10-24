@@ -3,40 +3,49 @@
 
 #include <stdbool.h>
 
-#define N_SYM 56		/* symbol number */
-#define N_RW 12			/* reversed words number */
+#define N_SYM 64		/* symbol number */
+#define N_RW 18			/* reversed words number */
 #define N_FCT 11		/* fct code number */
 #define LEN_NUM 14		/* max length of a number */
-#define LEN_ID 16		/* max length of an identity */
+#define LEN_ID 20		/* max length of an identity */
 #define LEN_L 100       /* max length of a line */
 #define MAX_ERR 50		/* number of the error can be processed at most */
 #define MAX_CX 200		/* max number of fct */
-#define SIZE_TB 100		/* capacity of symbol table */
+#define SIZE_TB 150		/* capacity of symbol table */
 #define SIZE_STACK 500	/* capacity of runtime stack */
 #define BOUND_ADR 2048	/* bound of address */
 
 
 /* symbols dict */
 typedef enum SYMBOL {
-    nul,		ident,		number,     varsym,     funcsym,
-    plus,		minus,      times,		slash,		mod,
-    autoincre,  autodecre,  andsym,     orsym,      notsym,
-    bitand,     bitor,      bitnot,     xor,        shl,
-    shr,        becomes,    plusbe,     minusbe,    timesbe,
-    slashbe,    modbe,      andbe,      orbe,       xorbe,
-    shlbe,      shrbe,      eql,        neq,        lss,
-    leq,		gtr,        geq,        lparen,     rparen,
-    lbrace,		rbrace,     range,      halfrange,  semicolon,
-    period,     ifsym,      elsesym,	forsym,     insym,
-    whilesym,   repeatsym,  readsym,	printsym,	callsym,
-    returnsym,
+    nul,        ident,      number,     varsym,     letsym,
+    funcsym,    intsym,     boolsym,    charsym,    plus,
+    minus,      times,      slash,      mod,        autoincre,
+    autodecre,  andsym,     orsym,      notsym,     bitand,
+    bitor,      bitnot,     xor,        shl,        shr,
+    becomes,    plusbe,     minusbe,    timesbe,    slashbe,
+    modbe,      andbe,      orbe,       xorbe,      shlbe,
+    shrbe,      eql,        neq,        lss,        leq,
+    gtr,        geq,        pointer,    colon,      semicolon,
+    period,     lparen,     rparen,     lbrace,     rbrace,
+    range,      halfrange,  ifsym,      elsesym,    forsym,
+    insym,      whilesym,   repeatsym,  readsym,    printsym,
+    callsym,    returnsym,  truesym,    falsesym,
 }SYMBOL;
 
 /* identity types */
 typedef enum OBJECT {
+    constant,
 	variable,
 	function,
 }OBJECT;
+
+typedef enum DATATYPE {
+    pretermit,
+    inttype,
+    chartype,
+    booltype,
+}DATATYPE;
 
 /* fct code types */
 typedef enum FCT {
@@ -46,7 +55,7 @@ typedef enum FCT {
     in,     out,
 }FCT;
 
-char ERR_TP[100][100];          /* error type dictionary */
+char ERR_TP[80][80];            /* error type dictionary */
 char word[N_RW][LEN_ID];		/* reversed words' dict */
 char mnemonic[N_FCT][5];		/* fct code dict */
 enum SYMBOL ssym[256];			/* value of single-letter-type symbol */
