@@ -121,7 +121,7 @@ void interpret()
     int t = 0;      /* pointer of stack top */
     Instruction i;  /* store current code */
     int s[SIZE_STACK];  /* stack */
-    int reg[16];    /* register */
+    int reg[SIZE_REG];    /* register */
 
     s[0] = 0;
     s[1] = 0;

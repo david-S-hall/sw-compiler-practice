@@ -1,5 +1,12 @@
-0 func f1()-> int{
-1 	return 1;
-5 }
-6 call f1();
-8 print(f1());
+0 var t1:int;
+1 var t2:int;
+1 func gcd(a:int, b:int)->int{
+6 	if a % b == 0{
+11 		return b;
+15 	}else{
+16 		return gcd(b, a%b);
+26 	};
+26 }
+26 t1 = 84;
+30 t2 = 36;
+32 print(gcd(t1, t2));

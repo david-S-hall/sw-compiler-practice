@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#define N_SYM 64		/* symbol number */
+#define N_SYM 65		/* symbol number */
 #define N_RW 18			/* reversed words number */
 #define N_FCT 11		/* fct code number */
 #define LEN_NUM 14		/* max length of a number */
@@ -13,6 +13,7 @@
 #define MAX_CX 200		/* max number of fct */
 #define SIZE_TB 150		/* capacity of symbol table */
 #define SIZE_STACK 500	/* capacity of runtime stack */
+#define SIZE_REG 16     /* capacity of registers */
 #define BOUND_ADR 2048	/* bound of address */
 
 
@@ -26,11 +27,11 @@ typedef enum SYMBOL {
     becomes,    plusbe,     minusbe,    timesbe,    slashbe,
     modbe,      andbe,      orbe,       xorbe,      shlbe,
     shrbe,      eql,        neq,        lss,        leq,
-    gtr,        geq,        pointer,    colon,      semicolon,
+    gtr,        geq,        comma,      colon,      semicolon,
     period,     lparen,     rparen,     lbrace,     rbrace,
-    range,      halfrange,  ifsym,      elsesym,    forsym,
-    insym,      whilesym,   repeatsym,  readsym,    printsym,
-    callsym,    returnsym,  truesym,    falsesym,
+    range,      halfrange,  pointer,    ifsym,      elsesym,
+    forsym,     insym,      whilesym,   repeatsym,  readsym,
+    printsym,   callsym,    returnsym,  truesym,    falsesym,
 }SYMBOL;
 
 /* identity types */

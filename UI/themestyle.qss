@@ -25,6 +25,7 @@ SWCompiler #centralwidget
 SWCompiler #codeScroll *
 {
 	background-color: #808080;
+	selection-color: #FFFFFF;
 	selection-background-color: #686578;
 }
 SWCompiler #statusBarFrame

@@ -1,1 +1,10 @@
-var i;
+var t1;
+var t2;
+func f1(x1:int, x2:int)->int{
+	return x1+x2;
+}
+t1 = 1;
+t2 = 2;
+read(t1);
+call f1(t1,t2);
+print(f1(t1,t2));

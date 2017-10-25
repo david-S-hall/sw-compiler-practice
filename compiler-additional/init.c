@@ -20,6 +20,7 @@ void init_setting()
 	ssym['{'] = lbrace;
 	ssym['}'] = rbrace;
 	ssym['='] = becomes;
+	ssym[','] = comma;
 	ssym[':'] = colon;
 	ssym[';'] = semicolon;
 	ssym['$'] = period;
@@ -80,6 +81,7 @@ void init_setting()
 	/* start sets setting */
 	declbegsys[varsym] = true;
 	declbegsys[funcsym] = true;
+	declbegsys[letsym] = true;
 
 	statbegsys[ifsym] = true;
 	statbegsys[whilesym] = true;
@@ -111,6 +113,7 @@ void init_errors()
     strcpy(ERR_TP[7], "a wrong follow token after declaration");
     strcpy(ERR_TP[8], "a wrong follow token after statement");
     strcpy(ERR_TP[9], "parsing incomplete");
+    strcpy(ERR_TP[10], "a function can receive no more than 15 parameters");
     strcpy(ERR_TP[11], "a no-declaration identity");
     strcpy(ERR_TP[12], "a variable type need for lhs");
     strcpy(ERR_TP[13], "lack of become token for assignment statement");
@@ -122,8 +125,11 @@ void init_errors()
     strcpy(ERR_TP[19], "statement ending with a wrong follow symbol");
     strcpy(ERR_TP[20], "a relation operator is lost");
     strcpy(ERR_TP[21], "invalid conversation for a function identity");
+    strcpy(ERR_TP[22], "parameter declaration need ':' for datatype declaration");
+    strcpy(ERR_TP[23], "number of passing parameters cannot match declaration");
     strcpy(ERR_TP[24], "a wrong start token for factor");
     strcpy(ERR_TP[25], "non-variable identity cannot be read by input");
+    strcpy(ERR_TP[26], "a parameter without name");
     strcpy(ERR_TP[30], "too long for a number");
     strcpy(ERR_TP[31], "number is out-of-range");
     strcpy(ERR_TP[33], "invalid statement for lacking a token ')'");

@@ -79,7 +79,10 @@ void debug();
 void listcode(int cx0);
 void listall();
 void problem(int lev, int tx, bool* fsys);
+void func_decl_body(int lev, int tx, bool* fsys);
+void var_decl(int lev, int* ptx, int* pdx);
 void declaration(OBJECT tp, int* ptx, int lev, int* pdx);
+void parameter(bool* fsys, int* ptx, int lev, int p);
 void statement(bool* fsys, int* ptx, int lev);
 #define expression(fsys, ptx, lev) 	cond_or(fsys, ptx, lev)
 void cond_or(bool* fsys, int* ptx, int lev);

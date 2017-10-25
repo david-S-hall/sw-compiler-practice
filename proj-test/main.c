@@ -7,7 +7,7 @@
 int main(int argc, char* argv[])
 {
     /* loading the input & output files */
-    char fname[LEN_ID];
+    char fname[120];
     #ifdef __DEBUG__
     printf("Input file name:\t");
     scanf("%s", fname);

@@ -21,7 +21,8 @@ class Interpret(object):
 		self.b = 1		# base address of code
 		self.t = 0		# pointer of stack top
 		# runtime stack
-		self.s = [0 for x in range(500)]
+		self.s = [0 for x in xrange(5000)]
+		self.reg = [0 for x in xrange(16)]
 
 	def judge(self):
 		if self.p == 0:
@@ -45,7 +46,8 @@ class Interpret(object):
 		return [self.s[x] for x in xrange(self.t+1)]
 
 	def sg_step(self):
-		p, b, t, s = self.p, self.b, self.t, self.s
+		p, b, t = self.p, self.b, self.t
+		s, reg = self.s, self.reg
 		self.c = p
 		'''
 		 tag is for judge IO
@@ -152,11 +154,18 @@ class Interpret(object):
 			t = t - 1
 		if i.f == "in":		# input
 			t = t + 1
-			tag = 1
+			if i.a == 0:
+				tag = 1
+			else:
+				s[t] = reg[i.a]
 		if i.f == "out":	# output
-			self.buf = s[t]
-			tag = 2
+			if i.a == 0:
+				self.buf = s[t]
+				tag = 2
+			else:
+				reg[i.a] = s[t]
 			t = t - 1
 
-		self.p, self.b, self.t, self.s = p, b, t, s
+		self.p, self.b, self.t = p, b, t
+		self.s, self.reg = s, reg
 		return tag

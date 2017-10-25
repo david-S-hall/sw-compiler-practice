@@ -1,40 +1,127 @@
-funcsym func f1()-> int{
+varsym var t1:int;
 
-ident func f1()-> int{
+ident var t1:int;
 
-lparen func f1()-> int{
+colon var t1:int;
 
-rparen func f1()-> int{
+intsym var t1:int;
 
-pointer func f1()-> int{
+semicolon var t1:int;
 
-intsym func f1()-> int{
+varsym var t2:int;
 
-lbrace func f1()-> int{
+ident var t2:int;
 
-returnsym 	return 1;
+colon var t2:int;
 
-number 	return 1;
+intsym var t2:int;
 
-semicolon 	return 1;
+semicolon var t2:int;
+
+funcsym func gcd(a:int, b:int)->int{
+
+ident func gcd(a:int, b:int)->int{
+
+lparen func gcd(a:int, b:int)->int{
+
+ident func gcd(a:int, b:int)->int{
+
+colon func gcd(a:int, b:int)->int{
+
+intsym func gcd(a:int, b:int)->int{
+
+comma func gcd(a:int, b:int)->int{
+
+ident func gcd(a:int, b:int)->int{
+
+colon func gcd(a:int, b:int)->int{
+
+intsym func gcd(a:int, b:int)->int{
+
+rparen func gcd(a:int, b:int)->int{
+
+pointer func gcd(a:int, b:int)->int{
+
+intsym func gcd(a:int, b:int)->int{
+
+lbrace func gcd(a:int, b:int)->int{
+
+ifsym 	if a % b == 0{
+
+ident 	if a % b == 0{
+
+mod 	if a % b == 0{
+
+ident 	if a % b == 0{
+
+eql 	if a % b == 0{
+
+number 	if a % b == 0{
+
+lbrace 	if a % b == 0{
+
+returnsym 		return b;
+
+ident 		return b;
+
+semicolon 		return b;
+
+rbrace 	}else{
+
+elsesym 	}else{
+
+lbrace 	}else{
+
+returnsym 		return gcd(b, a%b);
+
+ident 		return gcd(b, a%b);
+
+lparen 		return gcd(b, a%b);
+
+ident 		return gcd(b, a%b);
+
+comma 		return gcd(b, a%b);
+
+ident 		return gcd(b, a%b);
+
+mod 		return gcd(b, a%b);
+
+ident 		return gcd(b, a%b);
+
+rparen 		return gcd(b, a%b);
+
+semicolon 		return gcd(b, a%b);
+
+rbrace 	};
+
+semicolon 	};
 
 rbrace }
 
-callsym call f1();
+ident t1 = 84;
 
-ident call f1();
+becomes t1 = 84;
 
-lparen call f1();
+number t1 = 84;
 
-rparen call f1();
+semicolon t1 = 84;
 
-semicolon call f1();
+ident t2 = 36;
 
-printsym print(f1());
-lparen print(f1());
-ident print(f1());
-lparen print(f1());
-rparen print(f1());
-rparen print(f1());
-semicolon print(f1());
-1
+becomes t2 = 36;
+
+number t2 = 36;
+
+semicolon t2 = 36;
+
+printsym print(gcd(t1, t2));
+lparen print(gcd(t1, t2));
+ident print(gcd(t1, t2));
+lparen print(gcd(t1, t2));
+ident print(gcd(t1, t2));
+comma print(gcd(t1, t2));
+ident print(gcd(t1, t2));
+rparen print(gcd(t1, t2));
+rparen print(gcd(t1, t2));
+semicolon print(gcd(t1, t2));
+12
