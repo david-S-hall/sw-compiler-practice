@@ -74,6 +74,7 @@ void processing()
     fclose(ftable);
     fclose(fresult);
     #endif
+    exit(0);
 }
 
 void error(int n)
@@ -504,11 +505,6 @@ void problem(int lev, int tx, bool* fsys)
         if (rtn_num == 0)
             error(48);  // lack return value(s)
     }
-    int i;
-    for (i = 0; i < rtn_num; ++i)
-    {
-        code[rtnlist[i]].a = cx;
-    }
     gen(opr, 0, 0);
     rtn_type = pretermit;
     memset(nxtlev, 0, sizeof nxtlev);
@@ -765,11 +761,6 @@ void func_decl_body(int lev, int tx, bool* fsys)
     {
     	if (rtn_num == 0)
     		error(48);
-    }
-    int i;
-    for (i = 0; i < rtn_num; ++i)
-    {
-    	code[rtnlist[i]].a = cx;
     }
     gen(opr, 0, 0);
     rtn_type = pretermit;
@@ -1250,8 +1241,8 @@ void statement(bool* fsys, int* ptx, int lev)
             {
                 error(49);
             }
-            rtnlist[rtn_num++] = cx;
-            gen(jmp, 0, 0);
+            rtn_num++;
+            gen(opr, 0, 0);
         }
         if (sym == semicolon)
             getsym();

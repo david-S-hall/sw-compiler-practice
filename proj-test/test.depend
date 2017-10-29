@@ -1,10 +1,10 @@
 # depslib dependency file v1.0
-1508912178 source:e:\work\compiler\sw-compiler\proj-test\compiler.c
+1508915490 source:e:\work\compiler\sw-compiler\proj-test\compiler.c
 	<string.h>
 	<ctype.h>
 	"compiler.h"
 
-1508912616 e:\work\compiler\sw-compiler\proj-test\compiler.h
+1509295760 e:\work\compiler\sw-compiler\proj-test\compiler.h
 	<stdio.h>
 	"setting.h"
 

@@ -1,12 +1,23 @@
 var t1:int;
+
 var t2:int;
+
 func gcd(a:int, b:int)->int{
+
 	if a % b == 0{
+
 		return b;
+
 	}else{
+
 		return gcd(b, a%b);
+
 	};
+
 }
+
 t1 = 84;
+
 t2 = 36;
+
 print(gcd(t1, t2));

@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "setting.h"
 
-#undef __DEBUG__
+#define __DEBUG__
 
 typedef struct TableStruct
 {
@@ -37,7 +37,6 @@ char a[LEN_ID+1];		// symbol buffer
 int line_num;           // counter for read line
 int err_num;			// counter for known errors
 int fend_tag;           // tag of read the end of file
-int rtnlist[BOUND_ADR]; // list of fct code need return
 int rtn_num;            // unbackfilled fct code counter
 int rtn_type;           // type of return type
 
