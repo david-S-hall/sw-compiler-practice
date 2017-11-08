@@ -1,9 +1,9 @@
 problem = decl_list stat_list.
 
-decl_list = var_decl_list func_decl_list.
-var_decl_list = {(var_decl | const_decl) ";"}.
-var_decl = "var" ident[":" data_type].
-const_decl = "let" ident[":" data_type] "=" number.
+decl_list = data_decl_list func_decl_list.
+data_decl_list = {(var_decl | const_decl) ";"}.
+var_decl = "var" ident[":" data_type] {"," ident[":" data_type]}.
+const_decl = "let" ident[":" data_type] "=" number {"," ident[":" data_type] "=" number}.
 func_decl_list = {"func" ident "(" para_decl ")" ["->" data_type] "{" func_body "}"}.
 func_body = var_decl_list stat_list.
 para_decl = [ident ":" data_type {"," ident ":" data_type}].

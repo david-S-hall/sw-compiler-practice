@@ -446,7 +446,7 @@ void problem(int lev, int tx, bool* fsys)
     /* declaration list parsing */
     do {
         /* data declaration parsing */
-        var_decl(lev, &tx, &dx);
+        data_decl(lev, &tx, &dx);
 
         /* function declaration parsing */
         /* function declaration nesting is not allowed */
@@ -514,6 +514,81 @@ void problem(int lev, int tx, bool* fsys)
     #endif
 }
 
+
+void var_decl(int lev, int* ptx, int* pdx)
+{
+    getsym();
+    if (sym == ident)
+        declaration(variable, ptx, lev, pdx);
+    else error(4);
+
+    DATATYPE tp = pretermit;
+    if (sym == colon)
+    {
+        getsym();
+        switch(sym)
+        {
+            case intsym:
+                getsym();
+                tp = inttype;
+                break;
+            case boolsym:
+                getsym();
+                tp = booltype;
+                break;
+            case charsym:
+                getsym();
+                tp = chartype;
+                break;
+            default:
+                error(17);  // lack datatype after ':'
+                break;
+        }
+    }
+    table[(*ptx)].type = tp;
+}
+
+void let_decl(int lev, int* ptx, int* pdx)
+{
+    getsym();
+    if (sym == ident) getsym();
+    else error(4);
+
+    DATATYPE tp = pretermit;
+    if (sym == colon)
+    {
+        getsym();
+        switch(sym)
+        {
+            case intsym:
+                getsym();
+                tp = inttype;
+                break;
+            case boolsym:
+                getsym();
+                tp = booltype;
+                break;
+            case charsym:
+                getsym();
+                tp = chartype;
+                break;
+            default:
+                error(10);  // lack datatype after ':'
+                break;
+        }
+    }
+
+    if (sym == becomes) getsym();
+    else error(13);
+
+    if (sym == number)
+    {
+        declaration(constant, ptx, lev, pdx);
+        table[(*ptx)].type = tp;
+    }
+    else error(15);
+}
+
 /*
  * variable and constant declaration processing
  *
@@ -521,81 +596,23 @@ void problem(int lev, int tx, bool* fsys)
  * ptx:     tail pointer for symbol list
  * pdx:     tail pointer for data
  */
-void var_decl(int lev, int* ptx, int* pdx)
+void data_decl(int lev, int* ptx, int* pdx)
 {
     while (sym == varsym || sym == letsym)
     {
         if (sym == varsym)
         {
-            getsym();
-            if (sym == ident)
-                declaration(variable, ptx, lev, pdx);
-            else error(4);
-
-            DATATYPE tp = pretermit;
-            if (sym == colon)
-            {
-                getsym();
-                switch(sym)
-                {
-                    case intsym:
-                        getsym();
-                        tp = inttype;
-                        break;
-                    case boolsym:
-                        getsym();
-                        tp = booltype;
-                        break;
-                    case charsym:
-                        getsym();
-                        tp = chartype;
-                        break;
-                    default:
-                        error(17);  // lack datatype after ':'
-                        break;
-                }
+            var_decl(lev, ptx, pdx);
+            while (sym == comma){
+                var_decl(lev, ptx, pdx);
             }
-            table[(*ptx)].type = tp;
         }
         else if(sym == letsym)
         {
-            getsym();
-            if (sym == ident) getsym();
-            else error(4);
-
-            DATATYPE tp = pretermit;
-            if (sym == colon)
-            {
-                getsym();
-                switch(sym)
-                {
-                    case intsym:
-                        getsym();
-                        tp = inttype;
-                        break;
-                    case boolsym:
-                        getsym();
-                        tp = booltype;
-                        break;
-                    case charsym:
-                        getsym();
-                        tp = chartype;
-                        break;
-                    default:
-                        error(10);  // lack datatype after ':'
-                        break;
-                }
+            let_decl(lev, ptx, pdx);
+            while (sym == comma){
+                let_decl(lev, ptx, pdx);
             }
-
-            if (sym == becomes) getsym();
-            else error(13);
-
-            if (sym == number)
-            {
-                declaration(constant, ptx, lev, pdx);
-                table[(*ptx)].type = tp;
-            }
-            else error(15);
         }
         if (sym == semicolon)
             getsym();
@@ -702,7 +719,7 @@ void func_decl_body(int lev, int tx, bool* fsys)
     else error(37);
 
     /* declaration list parsing */
-    var_decl(lev, &tx, &dx);
+    data_decl(lev, &tx, &dx);
 
     /* update symbol table */
     code[table[tx0].adr].a = dx;

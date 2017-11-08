@@ -1,36 +1,21 @@
-0 var i;
+0 var t1:int, t2:int;
 1 
-1 var j;
-1 
-1 var sum;
-1 
-1 func test(){
-2 
-2   var a;
-2 
-2   a = 1;
-4 
-4   read(j);
+1 func gcd(a:int, b:int)->int{
 6 
-6   if a < j {
-9 
-9       a = a + 1;
-14 
-14     };
+6 	if a % b == 0{
+11 
+11 		return b;
 15 
-15   print(a);
-17 
-17 }
-17 
-17 call test();
-20 
-20 sum = 0;
-22 
-22 j = 1;
-24 for i in 1 ...j+10 {
-32  
-32    sum = sum + 1;
-36 
-36   };
-41 
-41 print(sum);
+15 	}else{
+16 
+16 		return gcd(b, a%b);
+26 
+26 	};
+26 
+26 }
+26 
+26 t1 = 84;
+30 
+30 t2 = 36;
+32 
+32 print(gcd(t1, t2));
