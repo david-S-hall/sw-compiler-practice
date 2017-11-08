@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "setting.h"
 
-#define __DEBUG__
+#undef __DEBUG__
 
 typedef struct TableStruct
 {

@@ -1,127 +1,157 @@
-varsym var t1:int;
+varsym var i;
 
-ident var t1:int;
+ident var i;
 
-colon var t1:int;
+semicolon var i;
 
-intsym var t1:int;
+varsym var j;
 
-semicolon var t1:int;
+ident var j;
 
-varsym var t2:int;
+semicolon var j;
 
-ident var t2:int;
+varsym var sum;
 
-colon var t2:int;
+ident var sum;
 
-intsym var t2:int;
+semicolon var sum;
 
-semicolon var t2:int;
+funcsym func test(){
 
-funcsym func gcd(a:int, b:int)->int{
+ident func test(){
 
-ident func gcd(a:int, b:int)->int{
+lparen func test(){
 
-lparen func gcd(a:int, b:int)->int{
+rparen func test(){
 
-ident func gcd(a:int, b:int)->int{
+lbrace func test(){
 
-colon func gcd(a:int, b:int)->int{
+varsym   var a;
 
-intsym func gcd(a:int, b:int)->int{
+ident   var a;
 
-comma func gcd(a:int, b:int)->int{
+semicolon   var a;
 
-ident func gcd(a:int, b:int)->int{
+ident   a = 1;
 
-colon func gcd(a:int, b:int)->int{
+becomes   a = 1;
 
-intsym func gcd(a:int, b:int)->int{
+number   a = 1;
 
-rparen func gcd(a:int, b:int)->int{
+semicolon   a = 1;
 
-pointer func gcd(a:int, b:int)->int{
+readsym   read(j);
 
-intsym func gcd(a:int, b:int)->int{
+lparen   read(j);
 
-lbrace func gcd(a:int, b:int)->int{
+ident   read(j);
 
-ifsym 	if a % b == 0{
+rparen   read(j);
 
-ident 	if a % b == 0{
+semicolon   read(j);
 
-mod 	if a % b == 0{
+ifsym   if a < j {
 
-ident 	if a % b == 0{
+ident   if a < j {
 
-eql 	if a % b == 0{
+lss   if a < j {
 
-number 	if a % b == 0{
+ident   if a < j {
 
-lbrace 	if a % b == 0{
+lbrace   if a < j {
 
-returnsym 		return b;
+ident       a = a + 1;
 
-ident 		return b;
+becomes       a = a + 1;
 
-semicolon 		return b;
+ident       a = a + 1;
 
-rbrace 	}else{
+plus       a = a + 1;
 
-elsesym 	}else{
+number       a = a + 1;
 
-lbrace 	}else{
+semicolon       a = a + 1;
 
-returnsym 		return gcd(b, a%b);
+rbrace     };
 
-ident 		return gcd(b, a%b);
+semicolon     };
 
-lparen 		return gcd(b, a%b);
+printsym   print(a);
 
-ident 		return gcd(b, a%b);
+lparen   print(a);
 
-comma 		return gcd(b, a%b);
+ident   print(a);
 
-ident 		return gcd(b, a%b);
+rparen   print(a);
 
-mod 		return gcd(b, a%b);
-
-ident 		return gcd(b, a%b);
-
-rparen 		return gcd(b, a%b);
-
-semicolon 		return gcd(b, a%b);
-
-rbrace 	};
-
-semicolon 	};
+semicolon   print(a);
 
 rbrace }
 
-ident t1 = 84;
+callsym call test();
 
-becomes t1 = 84;
+ident call test();
 
-number t1 = 84;
+lparen call test();
 
-semicolon t1 = 84;
+rparen call test();
 
-ident t2 = 36;
+semicolon call test();
 
-becomes t2 = 36;
+ident sum = 0;
 
-number t2 = 36;
+becomes sum = 0;
 
-semicolon t2 = 36;
+number sum = 0;
 
-printsym print(gcd(t1, t2));
-lparen print(gcd(t1, t2));
-ident print(gcd(t1, t2));
-lparen print(gcd(t1, t2));
-ident print(gcd(t1, t2));
-comma print(gcd(t1, t2));
-ident print(gcd(t1, t2));
-rparen print(gcd(t1, t2));
-rparen print(gcd(t1, t2));
-semicolon print(gcd(t1, t2));
-12
+semicolon sum = 0;
+
+ident j = 1;
+
+becomes j = 1;
+
+number j = 1;
+
+semicolon j = 1;
+
+forsym for i in 1 ...j+10 {
+
+ident for i in 1 ...j+10 {
+
+insym for i in 1 ...j+10 {
+
+number for i in 1 ...j+10 {
+
+range for i in 1 ...j+10 {
+
+ident for i in 1 ...j+10 {
+
+plus for i in 1 ...j+10 {
+
+number for i in 1 ...j+10 {
+
+lbrace for i in 1 ...j+10 {
+
+ident    sum = sum + 1;
+
+becomes    sum = sum + 1;
+
+ident    sum = sum + 1;
+
+plus    sum = sum + 1;
+
+number    sum = sum + 1;
+
+semicolon    sum = sum + 1;
+
+rbrace   };
+
+semicolon   };
+
+printsym print(sum);
+lparen print(sum);
+ident print(sum);
+rparen print(sum);
+semicolon print(sum);
+2
+11

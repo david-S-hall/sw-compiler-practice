@@ -115,7 +115,7 @@ class SWHighlighter(QSyntaxHighlighter):
 		BUILDINS = ["int", "char", "bool", "true", "false"]
 
 		OPERATORS = ["\+", "-", "\*", "/", "%", "&", "\|", "~", "\^", "\!",
-					 "<", ">", "=", "\.\."]
+					 "<", ">", "=", "\."]
 
 		SWHighlighter.Rules.append((QRegExp(
 			"|".join([r"\b%s\b" % keyword for keyword in KEYWORDS])),
@@ -242,6 +242,8 @@ class RuntimeWin(QMainWindow, UI_RtmWindow):
 		self.debug = 4
 
 	def setCodeStatus(self, idx, ok):
+		if self.mod == 0:
+			return
 		item = self.TACCodeLists.item(idx+1)
 		if ok == True:
 			item.setBackgroundColor(Qt.red)

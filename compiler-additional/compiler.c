@@ -752,7 +752,7 @@ void func_decl_body(int lev, int tx, bool* fsys)
     	getsym();
     	memcpy(nxtlev, statbegsys, sizeof nxtlev);
     	nxtlev[funcsym] = true;
-    	test(nxtlev, fsys, 6);
+    	test(fsys, nxtlev, 6);
     }
     else error(38);	// lack '}'
 
@@ -810,47 +810,6 @@ void parameter(bool* fsys, int* ptx, int lev, int p)
         error(23);
 }
 
-void forstatrange(bool* fsys, int* ptx, int lev)
-{
-	int i;
-	switch (sym)
-	{
-		case ident:
-	    	i = position(id, *ptx);
-			if (i == 0) error(11);  // a no-declaration identity
-			else
-			{
-			    switch (table[i].kind)
-			    {
-                    case constant:
-                        gen(lit, 0, table[i].val);
-                        break;
-                    case variable:
-				        gen(lod, lev-table[i].level, table[i].adr);
-		                break;
-			        case function:
-				        error(21);  // cannot be a function
-				        i = 0;
-				        break;
-				    }
-				}
-				getsym();
-	    		break;
-	   	case number:
-	    	if (num > BOUND_ADR)
-			{
-				error(31);  // number out of range
-				num = 0;
-			}
-			gen(lit, 0, num);
-			getsym();
-	    	break;
-	    default:
-	    	error(40);	// lack a left range
-	    	break;
-	}
-}
-
 /*
  * statement processing
  */
@@ -886,6 +845,7 @@ void statement(bool* fsys, int* ptx, int lev)
                             gen(lod, lev-table[i].level, table[i].adr);
                         /* expression parsing */
                         memcpy(nxtlev, fsys, sizeof nxtlev);
+                        nxtlev[semicolon] = true;
                         expression(nxtlev, ptx, lev);
 
                         switch (assop)
@@ -1148,7 +1108,10 @@ void statement(bool* fsys, int* ptx, int lev)
     	    			if (sym != insym) error(39);	// lack 'in'
     	    			else getsym();
 
-    	    			forstatrange(fsys, ptx, lev);
+                        memcpy(nxtlev, fsys, sizeof nxtlev);
+                        nxtlev[range] = true;
+                        nxtlev[halfrange] = true;
+                        expression(nxtlev, ptx, lev);
     	    			gen(sto, lev-table[i].level, table[i].adr);
 
     	    			int rgeop = sym;
@@ -1157,7 +1120,10 @@ void statement(bool* fsys, int* ptx, int lev)
 
     	    			cx1 = cx;
     	    			gen(lod, lev-table[i].level, table[i].adr);
-    	    			forstatrange(fsys, ptx, lev);
+
+    	    			memcpy(nxtlev, fsys, sizeof nxtlev);
+                        nxtlev[lbrace] = true;
+                        expression(nxtlev, ptx, lev);
 
     	    			/* condition judgement of 'for' range */
     	    			switch(rgeop)
@@ -1225,7 +1191,7 @@ void statement(bool* fsys, int* ptx, int lev)
             gen(jeq, 0, cx1);
 
             if (sym == rparen) getsym();
-            else error(34);
+            else error(33);
         }
         else if (sym == returnsym)
         {
